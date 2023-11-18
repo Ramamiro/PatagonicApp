@@ -13,5 +13,7 @@ data class Product(
     val productName: String,
 
     @ColumnInfo(name = "price")
-    val productPrice: Double
-)
+    val pricePerKg: Double,
+
+    val kgPerUnit: Double = 1.0
+    )
