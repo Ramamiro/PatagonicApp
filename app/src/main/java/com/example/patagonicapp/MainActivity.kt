@@ -53,7 +53,8 @@ class MainActivity : ComponentActivity() {
         val viewModel = DataViewModel(
             database.clientsDao(),
             database.productsDao(),
-            database.ordersDao()
+            database.ordersDao(),
+            database.locationsDao()
         )
 
         setContent {

@@ -13,17 +13,19 @@ import com.example.roompractice.viewmodels.DataViewModel
 fun ClientsScreen(viewModel: DataViewModel) {
     LazyColumn() {
         items(viewModel.clientsState.clientsList) {
-            ClientItem(item = it)
+            ClientItem(item = it, viewModel)
         }
     }
 }
 
 @Composable
-fun ClientItem(item: Client) {
+fun ClientItem(item: Client, viewModel: DataViewModel) {
     Row() {
 
         Text(text = item.clientId.toString())
         Text(text = item.clientName)
+        Text(text = item.clientBusiness)
+        Text(text = viewModel.getLocationById(item.locationId)?.locationName ?: "")
 
     }
 }

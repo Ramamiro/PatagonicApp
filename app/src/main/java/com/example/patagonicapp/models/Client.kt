@@ -1,10 +1,11 @@
 package com.example.patagonicapp.models
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 
-@Entity(tableName="clients")
+@Entity(tableName="clients",
+foreignKeys = [ForeignKey(entity= Location::class, childColumns = ["locationId"], parentColumns = ["locationId"])],
+indices= [Index("locationId")])
+
 data class Client(
 
     @PrimaryKey(autoGenerate = true)
@@ -17,7 +18,10 @@ data class Client(
     val clientBusiness: String,
 
     @ColumnInfo(name= "clientStatus")
-    val clientStatus: ClientStatus = ClientStatus.INACTIVE
+    val clientStatus: ClientStatus = ClientStatus.INACTIVE,
+
+    val locationId: Long
+
     )
 
 enum class ClientStatus {
@@ -27,3 +31,4 @@ enum class ClientStatus {
     CONCLUDED,
     CANCELLED
 }
+

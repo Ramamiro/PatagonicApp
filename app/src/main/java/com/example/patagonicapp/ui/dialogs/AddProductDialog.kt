@@ -1,9 +1,10 @@
 package com.example.patagonicapp.ui.dialogs
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -19,6 +20,7 @@ fun AddProductDialog(viewModel: DataViewModel, dismiss: () -> Unit) {
     var newProductKgPerUnit by remember { mutableStateOf("") }
 
     Surface(
+        shape= shapes.medium,
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
@@ -28,10 +30,12 @@ fun AddProductDialog(viewModel: DataViewModel, dismiss: () -> Unit) {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Row(horizontalArrangement = Arrangement.Center) {
+            Row(horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "Add New Product",
-                    style = MaterialTheme.typography.h6
+                    text = "New Product",
+                    style = MaterialTheme.typography.h6,
+                    color= colors.primary
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -41,51 +45,59 @@ fun AddProductDialog(viewModel: DataViewModel, dismiss: () -> Unit) {
                 onValueChange = { newProductName = it },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text
+                ),
+                label = { Text("Product name") }
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            )
+            {
+                OutlinedTextField(
+                    value = newProductPricePerKg.toString(),
+                    onValueChange = { newProductPricePerKg = it },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Decimal
+                    ),
+                    label = { Text("Price") }
+                    ,
+                    modifier = Modifier.width(170.dp)
                 )
-            )
-            Spacer(modifier = Modifier.height(16.dp))
 
-            Row(modifier = Modifier.fillMaxWidth()
-            )
-                {
-                    OutlinedTextField(
-                        value = newProductPricePerKg.toString(),
-                        onValueChange = { newProductPricePerKg = it },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            keyboardType = KeyboardType.Decimal
-                        ),
-                        modifier = Modifier.width(170.dp)
-                    )
+                Spacer(modifier = Modifier.width(16.dp))
 
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    OutlinedTextField(
-                        value = newProductKgPerUnit.toString(),
-                        onValueChange = { newProductKgPerUnit = it },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            keyboardType = KeyboardType.Decimal
-                        )
-                    )
-                }
+                OutlinedTextField(
+                    value = newProductKgPerUnit.toString(),
+                    onValueChange = { newProductKgPerUnit = it },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Decimal
+                    ),
+                    label = { Text("Kg") }
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    try {
-                        viewModel.addProduct(
-                            Product(
-                                productName = newProductName,
-                                pricePerKg = newProductPricePerKg.toDouble(),
-                                kgPerUnit = newProductKgPerUnit.toDouble()
+            Row(horizontalArrangement = Arrangement.End,
+                modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    shape = MaterialTheme.shapes.large,
+                    onClick = {
+                        try {
+                            viewModel.addProduct(
+                                Product(
+                                    productName = newProductName,
+                                    pricePerKg = newProductPricePerKg.toDouble(),
+                                    kgPerUnit = newProductKgPerUnit.toDouble()
+                                )
                             )
-                        )
-                        dismiss()
-                    } catch (_: Exception) {
-                    }
-                },
-            ) {
-                Text("Add Product")
+                            dismiss()
+                        } catch (_: Exception) {
+                        }
+                    },
+                ) {
+                    Text("Add")
+                }
             }
         }
     }

@@ -2,6 +2,8 @@
 <resources>
 
     <style name="Theme.PatagonicApp" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">@color/purple_700</item>
+        <!-- Primary brand color. -->
+        <item name="android:colorPrimary">@color/purple_200</item>
+
     </style>
 </resources>

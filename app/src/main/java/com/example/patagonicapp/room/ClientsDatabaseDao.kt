@@ -14,9 +14,6 @@ interface ClientsDatabaseDao {
     @Query("SELECT * FROM clients")
     fun getAllClients(): Flow<List<Client>>
 
-    @Query("SELECT * FROM clients WHERE clientId = :requestedClientId")
-    fun getClientById(requestedClientId:Long): Flow<Client>
-
     @Insert
     suspend fun addClient(client: Client)
 
