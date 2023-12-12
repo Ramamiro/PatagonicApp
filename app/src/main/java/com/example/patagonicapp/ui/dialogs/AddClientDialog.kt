@@ -38,8 +38,6 @@ fun AddClientDialog(viewModel: DataViewModel, dismiss: () -> Unit) {
     var customLocation by remember { mutableStateOf(false) }
     var newLocationName by remember { mutableStateOf("") }
 
-    var isDeleteLocationVisible by remember { mutableStateOf(false) }
-
     Surface(
         shape = shapes.medium,
         modifier = Modifier
