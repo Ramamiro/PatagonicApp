@@ -1,12 +1,14 @@
 package com.example.patagonicapp
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
+import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoveToInbox
@@ -27,22 +29,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.unit.dp
 import com.example.patagonicapp.room.AppDatabase
-import com.example.patagonicapp.ui.dialogs.AddClientDialog
-import com.example.patagonicapp.ui.dialogs.AddOrderDialog
-import com.example.patagonicapp.ui.dialogs.AddProductDialog
-import com.example.patagonicapp.ui.screens.ClientsScreen
-import com.example.patagonicapp.ui.screens.ProductsScreen
-import com.example.patagonicapp.ui.screens.TripScreen
+import com.example.patagonicapp.ui.screens.*
 import com.example.patagonicapp.ui.theme.RoomPracticeTheme
 import com.example.roompractice.viewmodels.DataViewModel
 
 data class NavigationItem(
     val title: String,
+    val FABRoute: String,
     val selectedIcon: ImageVector,
-    val unSelectedIcon: ImageVector
-)
+    val unSelectedIcon: ImageVector,
+
+    )
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,16 +68,19 @@ class MainActivity : ComponentActivity() {
                 val navigationItemList = listOf(
                     NavigationItem(
                         title = "Clients",
+                        FABRoute = "AddClient",
                         selectedIcon = Icons.Filled.Person,
                         unSelectedIcon = Icons.Outlined.Person
                     ),
                     NavigationItem(
                         title = "Trip",
+                        FABRoute = "AddOrder",
                         selectedIcon = Icons.Filled.ShoppingCart,
                         unSelectedIcon = Icons.Outlined.ShoppingCart
                     ),
                     NavigationItem(
                         title = "Products",
+                        FABRoute = "AddProduct",
                         selectedIcon = Icons.Filled.MoveToInbox,
                         unSelectedIcon = Icons.Outlined.MoveToInbox
                     )
@@ -86,11 +88,11 @@ class MainActivity : ComponentActivity() {
 
                 Surface(modifier = Modifier.fillMaxSize()) {
                     Scaffold(
-                        Modifier.background(Color.Transparent),
+                        backgroundColor= MaterialTheme.colors.background,
+                        modifier = Modifier
+                            .background(Color.LightGray),
                         topBar = {
-                            TopAppBar(backgroundColor = MaterialTheme.colors.background) {
-                            }
-
+                            TopAppBar(backgroundColor = Color.White) {}
                         },
                         bottomBar = {
                             BottomNavigation(
@@ -106,7 +108,11 @@ class MainActivity : ComponentActivity() {
                                         icon = {
                                             BadgedBox(badge = {}) {
                                                 Icon(
-                                                    imageVector = item.selectedIcon,
+                                                    imageVector = if (selectedNavigationItemIndex == index) {
+                                                        item.selectedIcon
+                                                    } else {
+                                                        item.unSelectedIcon
+                                                    },
                                                     contentDescription = item.title
                                                 )
                                             }
@@ -115,41 +121,32 @@ class MainActivity : ComponentActivity() {
                             }
                         },
                         floatingActionButton = {
-                            FloatingActionButton(onClick = {
-                                showDialog = true
 
-                            }, content = {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "Add"
+                                FloatingActionButton(
+                                    onClick = {
+                                        navController.navigate(
+                                            navigationItemList[selectedNavigationItemIndex].FABRoute
+                                        )
+                                    },
+                                    content = {
+                                        Icon(
+                                            imageVector = Icons.Default.Add,
+                                            contentDescription = "Add"
+                                        )
+                                    }
                                 )
-                            })
                         }
                     ) {
                         NavHost(navController = navController, startDestination = "Trip") {
+
                             composable("Trip") { TripScreen(viewModel = viewModel) }
                             composable("Clients") { ClientsScreen(viewModel = viewModel) }
                             composable("Products") { ProductsScreen(viewModel = viewModel) }
 
-                        }
+                            composable("AddProduct") { AddProductScreen(viewModel = viewModel) }
+                            composable("AddClient") { AddClientScreen(viewModel = viewModel, goBack = {navController.navigate(navigationItemList[selectedNavigationItemIndex].title)}) }
+                            composable("AddOrder") { AddOrderScreen(viewModel = viewModel) }
 
-                        if (showDialog) {
-                            Dialog(
-                                onDismissRequest = { showDialog = false },
-                            ) {
-                                when (selectedNavigationItemIndex) {
-                                    0 -> AddClientDialog(viewModel = viewModel) {
-                                        showDialog = false
-                                    }
-                                    1-> AddOrderDialog(viewModel = viewModel) {
-                                        showDialog = false
-                                    }
-                                    2 -> AddProductDialog(viewModel = viewModel) {
-                                        showDialog = false
-                                    }
-                                    else -> {}
-                                }
-                            }
                         }
                     }
                 }

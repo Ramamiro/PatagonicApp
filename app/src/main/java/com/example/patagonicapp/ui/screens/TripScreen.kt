@@ -21,6 +21,7 @@ fun TripScreen(viewModel: DataViewModel) {
                     Text(text = item.quantity.toString())
                 }
             }
+
         }
     }
 }
