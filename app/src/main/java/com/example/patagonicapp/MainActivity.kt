@@ -4,16 +4,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
 import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoveToInbox
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Analytics
 import androidx.compose.material.icons.outlined.MoveToInbox
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.ShoppingCart
@@ -61,17 +60,12 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 var selectedNavigationItemIndex by rememberSaveable {
-                    mutableStateOf(1)
+                    mutableStateOf(0)
                 }
                 var showDialog by remember { mutableStateOf(false) }
 
                 val navigationItemList = listOf(
-                    NavigationItem(
-                        title = "Clients",
-                        FABRoute = "AddClient",
-                        selectedIcon = Icons.Filled.Person,
-                        unSelectedIcon = Icons.Outlined.Person
-                    ),
+
                     NavigationItem(
                         title = "Trip",
                         FABRoute = "AddOrder",
@@ -79,21 +73,18 @@ class MainActivity : ComponentActivity() {
                         unSelectedIcon = Icons.Outlined.ShoppingCart
                     ),
                     NavigationItem(
-                        title = "Products",
+                        title = "Settings",
                         FABRoute = "AddProduct",
-                        selectedIcon = Icons.Filled.MoveToInbox,
-                        unSelectedIcon = Icons.Outlined.MoveToInbox
+                        selectedIcon = Icons.Filled.Analytics,
+                        unSelectedIcon = Icons.Outlined.Analytics
                     )
                 )
 
                 Surface(modifier = Modifier.fillMaxSize()) {
                     Scaffold(
-                        backgroundColor= MaterialTheme.colors.background,
+                        backgroundColor = MaterialTheme.colors.background,
                         modifier = Modifier
                             .background(Color.LightGray),
-                        topBar = {
-                            TopAppBar(backgroundColor = Color.White) {}
-                        },
                         bottomBar = {
                             BottomNavigation(
                                 backgroundColor = Color.White
@@ -103,7 +94,6 @@ class MainActivity : ComponentActivity() {
                                         selected = selectedNavigationItemIndex == index,
                                         onClick = {
                                             navController.navigate(item.title)
-                                            selectedNavigationItemIndex = index
                                         },
                                         icon = {
                                             BadgedBox(badge = {}) {
@@ -120,35 +110,43 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         },
-                        floatingActionButton = {
+                        content = {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(it)
+                            ) {
+                                NavHost(navController = navController, startDestination = "Trip") {
 
-                                FloatingActionButton(
-                                    onClick = {
-                                        navController.navigate(
-                                            navigationItemList[selectedNavigationItemIndex].FABRoute
+                                    composable("Trip") {
+                                        TripScreen(
+                                            viewModel = viewModel,
+                                            navController = navController
                                         )
-                                    },
-                                    content = {
-                                        Icon(
-                                            imageVector = Icons.Default.Add,
-                                            contentDescription = "Add"
-                                        )
+                                        selectedNavigationItemIndex = 0
                                     }
-                                )
+                                    composable("Settings") {
+                                        SettingsScreen(
+                                            viewModel = viewModel,
+                                            navController = navController
+                                        )
+                                        selectedNavigationItemIndex = 1
+                                    }
+
+                                    composable("Clients") { ClientsScreen(viewModel = viewModel) }
+                                    composable("Products") { ProductsScreen(viewModel = viewModel) }
+
+                                    composable("AddProduct") { AddProductScreen(viewModel = viewModel) }
+                                    composable("AddClient") {
+                                        AddClientScreen(
+                                            viewModel = viewModel,
+                                            goBack = { navController.navigate(navigationItemList[selectedNavigationItemIndex].title) })
+                                    }
+                                    composable("AddOrder") { AddOrderScreen(viewModel = viewModel) }
+                                }
+                            }
                         }
-                    ) {
-                        NavHost(navController = navController, startDestination = "Trip") {
-
-                            composable("Trip") { TripScreen(viewModel = viewModel) }
-                            composable("Clients") { ClientsScreen(viewModel = viewModel) }
-                            composable("Products") { ProductsScreen(viewModel = viewModel) }
-
-                            composable("AddProduct") { AddProductScreen(viewModel = viewModel) }
-                            composable("AddClient") { AddClientScreen(viewModel = viewModel, goBack = {navController.navigate(navigationItemList[selectedNavigationItemIndex].title)}) }
-                            composable("AddOrder") { AddOrderScreen(viewModel = viewModel) }
-
-                        }
-                    }
+                    )
                 }
             }
         }

@@ -8,17 +8,16 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.TextStyle
+import com.example.patagonicapp.ui.theme.paddingJump
 
 @Composable
 fun <T : Any> CustomSpinner(
@@ -48,7 +47,7 @@ fun <T : Any> CustomSpinner(
                     if (icon != null) {
                         Icon(icon, contentDescription = null, tint = color)
                     }
-                    Spacer(Modifier.width(16.dp))
+                    Spacer(Modifier.width(paddingJump))
                     Box(modifier = Modifier.fillMaxWidth()) {
                         if (value.isEmpty()) {
                             Text(
