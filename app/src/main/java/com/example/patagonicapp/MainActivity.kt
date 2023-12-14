@@ -16,7 +16,7 @@ import androidx.compose.material.icons.outlined.Analytics
 import androidx.compose.material.icons.outlined.MoveToInbox
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.ShoppingCart
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,11 +24,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.navigation.NavController
 import com.example.patagonicapp.room.AppDatabase
 import com.example.patagonicapp.ui.screens.*
 import com.example.patagonicapp.ui.theme.RoomPracticeTheme
@@ -36,11 +35,40 @@ import com.example.roompractice.viewmodels.DataViewModel
 
 data class NavigationItem(
     val title: String,
-    val FABRoute: String,
     val selectedIcon: ImageVector,
     val unSelectedIcon: ImageVector,
+)
 
-    )
+data class Screen(
+    val route: String,
+    val screen: (viewModel: ViewModel, navController: NavController) -> Unit
+)
+
+enum class Screens(val route: String) {
+    TRIP(route = "Trip") {
+        @Composable
+        override fun Launch(viewModel: DataViewModel, navController: NavController) {
+            TripScreen(viewModel = viewModel, navController = navController)
+        }
+    },
+    SETTINGS(route = "Settings") {
+        @Composable
+        override fun Launch(viewModel: DataViewModel, navController: NavController) {
+            SettingsScreen(viewModel = viewModel, navController = navController)
+        }
+    },
+    CLIENTS(route = "Clients") {
+        @Composable
+        override fun Launch(viewModel: DataViewModel, navController: NavController) {
+            ClientsScreen(viewModel = viewModel, navController = navController)
+        }
+    },
+    ;
+
+    @Composable
+    abstract fun Launch(viewModel: DataViewModel, navController: NavController)
+}
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,16 +93,13 @@ class MainActivity : ComponentActivity() {
                 var showDialog by remember { mutableStateOf(false) }
 
                 val navigationItemList = listOf(
-
                     NavigationItem(
-                        title = "Trip",
-                        FABRoute = "AddOrder",
+                        title = Screens.TRIP.route,
                         selectedIcon = Icons.Filled.ShoppingCart,
                         unSelectedIcon = Icons.Outlined.ShoppingCart
                     ),
                     NavigationItem(
-                        title = "Settings",
-                        FABRoute = "AddProduct",
+                        title = Screens.SETTINGS.route,
                         selectedIcon = Icons.Filled.Analytics,
                         unSelectedIcon = Icons.Outlined.Analytics
                     )
@@ -106,7 +131,8 @@ class MainActivity : ComponentActivity() {
                                                     contentDescription = item.title
                                                 )
                                             }
-                                        })
+                                        }
+                                    )
                                 }
                             }
                         },
@@ -118,31 +144,28 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 NavHost(navController = navController, startDestination = "Trip") {
 
-                                    composable("Trip") {
-                                        TripScreen(
+                                    composable(Screens.TRIP.route) {
+                                        Screens.TRIP.Launch(
                                             viewModel = viewModel,
                                             navController = navController
                                         )
                                         selectedNavigationItemIndex = 0
                                     }
-                                    composable("Settings") {
-                                        SettingsScreen(
+
+                                    composable(Screens.SETTINGS.route) {
+                                        Screens.SETTINGS.Launch(
                                             viewModel = viewModel,
                                             navController = navController
                                         )
                                         selectedNavigationItemIndex = 1
                                     }
 
-                                    composable("Clients") { ClientsScreen(viewModel = viewModel) }
-                                    composable("Products") { ProductsScreen(viewModel = viewModel) }
-
-                                    composable("AddProduct") { AddProductScreen(viewModel = viewModel) }
-                                    composable("AddClient") {
-                                        AddClientScreen(
+                                    composable(Screens.CLIENTS.route) {
+                                        Screens.CLIENTS.Launch(
                                             viewModel = viewModel,
-                                            goBack = { navController.navigate(navigationItemList[selectedNavigationItemIndex].title) })
+                                            navController = navController
+                                        )
                                     }
-                                    composable("AddOrder") { AddOrderScreen(viewModel = viewModel) }
                                 }
                             }
                         }

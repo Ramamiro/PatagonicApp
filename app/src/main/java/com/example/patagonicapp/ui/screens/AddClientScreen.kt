@@ -20,6 +20,7 @@ import com.example.patagonicapp.models.Client
 import com.example.patagonicapp.models.Location
 import com.example.patagonicapp.ui.customComponents.CustomSpinner
 import com.example.patagonicapp.ui.customComponents.CustomTextField
+import com.example.patagonicapp.ui.customComponents.CustomTopBar
 import com.example.patagonicapp.ui.theme.paddingDivision
 import com.example.patagonicapp.ui.theme.paddingJump
 import com.example.roompractice.viewmodels.DataViewModel
@@ -36,78 +37,84 @@ fun AddClientScreen(viewModel: DataViewModel, goBack: () -> Unit) {
     var customLocation by remember { mutableStateOf(false) }
     var newLocationName by remember { mutableStateOf("") }
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp)
+    Scaffold(
+        topBar = {
+            CustomTopBar("Add Client")
+        }
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.TopCenter),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(vertical = 16.dp)
         ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.TopCenter),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-            CustomTextField(
-                value = newClientName,
-                onValueChange = { newClientName = it },
-                placeholder = "Client name",
-                icon = Icons.Default.Person
-            )
-
-            Spacer(modifier = Modifier.height(paddingDivision))
-
-            CustomTextField(
-                value = newClientBusiness,
-                onValueChange = { newClientBusiness = it },
-                placeholder = "Business name",
-                icon = Icons.Default.Factory
-            )
-
-            Spacer(modifier = Modifier.height(paddingDivision))
-
-            CustomTextField(
-                value = newClientName,
-                onValueChange = { newClientName = it },
-                placeholder = "Phone number",
-                icon = Icons.Default.Phone
-            )
-
-            Spacer(modifier = Modifier.height(paddingDivision))
-
-            CustomSpinner<Location>(
-                options = viewModel.locationsState.locationsList,
-                value = viewModel.getLocationById(newClientLocationId)?.locationName ?: "",
-                onSelection = {newClientLocationId = it.locationId},
-                onDisplay = {it.locationName},
-                placeholder = "Location"
+                CustomTextField(
+                    value = newClientName,
+                    onValueChange = { newClientName = it },
+                    placeholder = "Client name",
+                    icon = Icons.Default.Person
                 )
 
-            Spacer(modifier = Modifier.height(paddingJump))
+                Spacer(modifier = Modifier.height(paddingDivision))
 
-            Row(
-                horizontalArrangement = Arrangement.End,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Button(
-                    shape = MaterialTheme.shapes.large,
-                    onClick = {
-                        if (newClientLocationId != null && newClientName != "" && newClientBusiness != "") {
-                            try {
-                                viewModel.addClient(
-                                    Client(
-                                        clientName = newClientName,
-                                        clientBusiness = newClientBusiness,
-                                        locationId = newClientLocationId!!
-                                    )
-                                )
-                                goBack()
-                            } catch (_: Exception) {
-                            }
-                        }
-                    },
+                CustomTextField(
+                    value = newClientBusiness,
+                    onValueChange = { newClientBusiness = it },
+                    placeholder = "Business name",
+                    icon = Icons.Default.Factory
+                )
+
+                Spacer(modifier = Modifier.height(paddingDivision))
+
+                CustomTextField(
+                    value = newClientName,
+                    onValueChange = { newClientName = it },
+                    placeholder = "Phone number",
+                    icon = Icons.Default.Phone
+                )
+
+                Spacer(modifier = Modifier.height(paddingDivision))
+
+                CustomSpinner<Location>(
+                    options = viewModel.locationsState.locationsList,
+                    value = viewModel.getLocationById(newClientLocationId)?.locationName ?: "",
+                    onSelection = { newClientLocationId = it.locationId },
+                    onDisplay = { it.locationName },
+                    placeholder = "Location"
+                )
+
+                Spacer(modifier = Modifier.height(paddingJump))
+
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Add")
+                    Button(
+                        shape = MaterialTheme.shapes.large,
+                        onClick = {
+                            if (newClientLocationId != null && newClientName != "" && newClientBusiness != "") {
+                                try {
+                                    viewModel.addClient(
+                                        Client(
+                                            clientName = newClientName,
+                                            clientBusiness = newClientBusiness,
+                                            locationId = newClientLocationId!!
+                                        )
+                                    )
+                                    goBack()
+                                } catch (_: Exception) {
+                                }
+                            }
+                        },
+                    ) {
+                        Text("Add")
+                    }
                 }
             }
         }

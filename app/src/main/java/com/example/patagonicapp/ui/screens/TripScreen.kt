@@ -2,6 +2,7 @@ package com.example.patagonicapp.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
@@ -9,21 +10,24 @@ import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
+import com.example.patagonicapp.ui.customComponents.CustomTopBar
+import com.example.patagonicapp.ui.theme.paddingDefault
 import com.example.roompractice.viewmodels.DataViewModel
 
 @Composable
 fun TripScreen(viewModel: DataViewModel, navController: NavController) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                backgroundColor = Color.White
-            ) {}
+            CustomTopBar("Trip")
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {},
-            backgroundColor = MaterialTheme.colors.secondary)
+            FloatingActionButton(
+                onClick = {},
+                backgroundColor = MaterialTheme.colors.secondary
+            )
             {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "add")
             }
@@ -40,7 +44,6 @@ fun TripScreen(viewModel: DataViewModel, navController: NavController) {
                         Text(text = item.quantity.toString())
                     }
                 }
-
             }
         }
     }

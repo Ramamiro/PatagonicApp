@@ -16,22 +16,23 @@ fun CustomButton(
     value: String,
     onClick: () -> Unit,
     icon: ImageVector? = null
-){
-    Row(
-        Modifier
-            .background(Color.White)
-            .padding(vertical = 8.dp, horizontal = 32.dp)
+) {
+    Box(
+        Modifier.clickable(onClick = onClick)
     ) {
-        if(icon!=null){
-            Icon(icon, contentDescription = null)
+        Row(
+            Modifier
+                .background(Color.White)
+                .padding(vertical = 8.dp, horizontal = 32.dp)
+                .fillMaxWidth()
+        ) {
+            if (icon != null) {
+                Icon(icon, contentDescription = null)
+            }
+            Spacer(Modifier.width(paddingJump))
+            Text(
+                text = value,
+            )
         }
-        Spacer(Modifier.width(paddingJump))
-        Text(
-            text = value,
-            modifier = Modifier
-                .clickable(onClick = onClick)
-                .fillMaxWidth(),
-        )
-
     }
 }
