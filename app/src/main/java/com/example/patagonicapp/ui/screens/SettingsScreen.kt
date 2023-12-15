@@ -53,7 +53,9 @@ fun SettingsScreen(viewModel: DataViewModel, navController: NavController) {
                 CustomButton(
                     value = "Products",
                     icon = Icons.Default.AddBox,
-                    onClick = { /*TODO*/ })
+                    onClick = {
+                        navController.navigate(Screens.PRODUCTS.route)
+                    })
 
                 Spacer(modifier = Modifier.height(paddingDivision))
 

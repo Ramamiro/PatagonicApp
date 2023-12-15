@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.patagonicapp.ui.theme.paddingJump
 
@@ -24,24 +26,39 @@ fun CustomTextField(
     placeholder: String = "",
     icon: ImageVector? = null,
     textStyle: TextStyle = MaterialTheme.typography.body1,
-    color: Color = MaterialTheme.colors.primary
+    color: Color = MaterialTheme.colors.primary,
+    numericKeyBoard: Boolean = false
 ) {
-    BasicTextField(value = value, onValueChange = onValueChange, textStyle = textStyle, decorationBox = { innerTextField ->
-        Row(
-            Modifier
-                .background(Color.White)
-                .padding(vertical = 8.dp, horizontal = 32.dp)
-        ) {
-            if (icon != null) {
-                Icon(icon, contentDescription = null, tint = color)
-            }
-            Spacer(Modifier.width(paddingJump))
-            Box(modifier = Modifier.fillMaxWidth()) {
-                if (value.isEmpty()) {
-                    Text(text = placeholder , color = color)
+    BasicTextField(value = value,
+        onValueChange = onValueChange,
+        textStyle = textStyle,
+        keyboardOptions = if (numericKeyBoard) {
+            KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Decimal
+            )
+        } else {
+            KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Text
+            )
+       },
+        decorationBox = { innerTextField ->
+            Row(
+                Modifier
+                    .background(Color.White)
+                    .padding(vertical = 8.dp, horizontal = 32.dp)
+            ) {
+                if (icon != null) {
+                    Icon(icon, contentDescription = null, tint = color)
                 }
-                innerTextField()
+
+                Spacer(Modifier.width(paddingJump))
+
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    if (value.isEmpty()) {
+                        Text(text = placeholder, color = color)
+                    }
+                    innerTextField()
+                }
             }
-        }
-    })
+        })
 }

@@ -8,9 +8,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.example.patagonicapp.Screens
 import com.example.patagonicapp.models.Client
+import com.example.patagonicapp.ui.customComponents.CustomButton
 import com.example.patagonicapp.ui.customComponents.CustomTopBar
 import com.example.patagonicapp.ui.theme.paddingDefault
+import com.example.patagonicapp.ui.theme.paddingJump
 import com.example.roompractice.viewmodels.DataViewModel
 
 @Composable
@@ -27,10 +30,22 @@ fun ClientsScreen(viewModel: DataViewModel, navController: NavController) {
                 .padding(vertical = paddingDefault)
         )
         {
-            LazyColumn() {
-                items(viewModel.clientsState.clientsList) {
-                    ClientItem(item = it, viewModel)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+
+                LazyColumn() {
+                    items(viewModel.clientsState.clientsList) {
+                        ClientItem(item = it, viewModel)
+                    }
                 }
+
+                Spacer(modifier = Modifier.height(paddingJump))
+
+                CustomButton(
+                    value = "Add client",
+                    onClick = { navController.navigate(Screens.ADD_CLIENT.route) })
             }
         }
     }

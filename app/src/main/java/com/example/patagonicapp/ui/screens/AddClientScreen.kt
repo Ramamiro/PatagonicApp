@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.patagonicapp.Screens
 import com.example.patagonicapp.models.Client
 import com.example.patagonicapp.models.Location
 import com.example.patagonicapp.ui.customComponents.CustomSpinner
@@ -26,7 +28,7 @@ import com.example.patagonicapp.ui.theme.paddingJump
 import com.example.roompractice.viewmodels.DataViewModel
 
 @Composable
-fun AddClientScreen(viewModel: DataViewModel, goBack: () -> Unit) {
+fun AddClientScreen(viewModel: DataViewModel, navController: NavController) {
 
     var newClientName by remember { mutableStateOf("") }
     var newClientBusiness by remember { mutableStateOf("") }
@@ -39,7 +41,7 @@ fun AddClientScreen(viewModel: DataViewModel, goBack: () -> Unit) {
 
     Scaffold(
         topBar = {
-            CustomTopBar("Add Client")
+            CustomTopBar(Screens.ADD_CLIENT.route)
         }
     ) {
         Box(
@@ -107,7 +109,7 @@ fun AddClientScreen(viewModel: DataViewModel, goBack: () -> Unit) {
                                             locationId = newClientLocationId!!
                                         )
                                     )
-                                    goBack()
+                                    navController.popBackStack()
                                 } catch (_: Exception) {
                                 }
                             }

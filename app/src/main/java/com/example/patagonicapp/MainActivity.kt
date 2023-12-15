@@ -63,6 +63,26 @@ enum class Screens(val route: String) {
             ClientsScreen(viewModel = viewModel, navController = navController)
         }
     },
+    ADD_CLIENT(route = "Add Client") {
+        @Composable
+        override fun Launch(viewModel: DataViewModel, navController: NavController) {
+            AddClientScreen(viewModel = viewModel, navController = navController)
+        }
+    },
+    PRODUCTS(route = "Products"){
+        @Composable
+        override fun Launch(viewModel: DataViewModel, navController: NavController) {
+            ProductsScreen(viewModel = viewModel, navController = navController)
+        }
+    },
+    ADD_PRODUCT(route = "Add Products"){
+        @Composable
+        override fun Launch(viewModel: DataViewModel, navController: NavController) {
+            AddProductScreen(viewModel = viewModel, navController = navController)
+        }
+    }
+
+
     ;
 
     @Composable
@@ -162,6 +182,24 @@ class MainActivity : ComponentActivity() {
 
                                     composable(Screens.CLIENTS.route) {
                                         Screens.CLIENTS.Launch(
+                                            viewModel = viewModel,
+                                            navController = navController
+                                        )
+                                    }
+                                    composable(Screens.ADD_CLIENT.route) {
+                                        Screens.ADD_CLIENT.Launch(
+                                            viewModel = viewModel,
+                                            navController = navController
+                                        )
+                                    }
+                                    composable(Screens.PRODUCTS.route) {
+                                        Screens.PRODUCTS.Launch(
+                                            viewModel = viewModel,
+                                            navController = navController
+                                        )
+                                    }
+                                    composable(Screens.ADD_PRODUCT.route) {
+                                        Screens.ADD_PRODUCT.Launch(
                                             viewModel = viewModel,
                                             navController = navController
                                         )
