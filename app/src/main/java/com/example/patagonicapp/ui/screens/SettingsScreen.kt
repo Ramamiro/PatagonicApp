@@ -38,7 +38,6 @@ fun SettingsScreen(viewModel: DataViewModel, navController: NavController) {
         {
             Column(
                 Modifier.fillMaxSize()
-
             ) {
 
                 CustomButton(

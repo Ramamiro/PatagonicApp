@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
+import com.example.patagonicapp.Screens
 import com.example.patagonicapp.ui.customComponents.CustomTopBar
 import com.example.patagonicapp.ui.theme.paddingDefault
 import com.example.roompractice.viewmodels.DataViewModel
@@ -25,7 +26,9 @@ fun TripScreen(viewModel: DataViewModel, navController: NavController) {
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {},
+                onClick = {
+                          navController.navigate("${Screens.ADD_ORDER.route}")
+                },
                 backgroundColor = MaterialTheme.colors.secondary
             )
             {

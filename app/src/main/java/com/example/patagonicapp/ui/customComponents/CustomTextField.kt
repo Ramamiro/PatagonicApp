@@ -2,14 +2,11 @@ package com.example.patagonicapp.ui.customComponents
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,12 +24,12 @@ fun CustomTextField(
     icon: ImageVector? = null,
     textStyle: TextStyle = MaterialTheme.typography.body1,
     color: Color = MaterialTheme.colors.primary,
-    numericKeyBoard: Boolean = false
+    isNumeric: Boolean = false
 ) {
     BasicTextField(value = value,
         onValueChange = onValueChange,
         textStyle = textStyle,
-        keyboardOptions = if (numericKeyBoard) {
+        keyboardOptions = if (isNumeric) {
             KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Decimal
             )

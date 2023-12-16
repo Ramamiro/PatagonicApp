@@ -1,6 +1,7 @@
 package com.example.patagonicapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -45,48 +46,13 @@ data class Screen(
 )
 
 enum class Screens(val route: String) {
-    TRIP(route = "Trip") {
-        @Composable
-        override fun Launch(viewModel: DataViewModel, navController: NavController) {
-            TripScreen(viewModel = viewModel, navController = navController)
-        }
-    },
-    SETTINGS(route = "Settings") {
-        @Composable
-        override fun Launch(viewModel: DataViewModel, navController: NavController) {
-            SettingsScreen(viewModel = viewModel, navController = navController)
-        }
-    },
-    CLIENTS(route = "Clients") {
-        @Composable
-        override fun Launch(viewModel: DataViewModel, navController: NavController) {
-            ClientsScreen(viewModel = viewModel, navController = navController)
-        }
-    },
-    ADD_CLIENT(route = "Add Client") {
-        @Composable
-        override fun Launch(viewModel: DataViewModel, navController: NavController) {
-            AddClientScreen(viewModel = viewModel, navController = navController)
-        }
-    },
-    PRODUCTS(route = "Products"){
-        @Composable
-        override fun Launch(viewModel: DataViewModel, navController: NavController) {
-            ProductsScreen(viewModel = viewModel, navController = navController)
-        }
-    },
-    ADD_PRODUCT(route = "Add Products"){
-        @Composable
-        override fun Launch(viewModel: DataViewModel, navController: NavController) {
-            AddProductScreen(viewModel = viewModel, navController = navController)
-        }
-    }
-
-
-    ;
-
-    @Composable
-    abstract fun Launch(viewModel: DataViewModel, navController: NavController)
+    TRIP(route = "Trip"),
+    SETTINGS(route = "Settings"),
+    CLIENTS(route = "Clients"),
+    ADD_CLIENT(route = "Add Client") ,
+    PRODUCTS(route = "Products"),
+    ADD_PRODUCT(route = "Add Products"),
+    ADD_ORDER(route = "Add Order"),
 }
 
 
@@ -165,44 +131,32 @@ class MainActivity : ComponentActivity() {
                                 NavHost(navController = navController, startDestination = "Trip") {
 
                                     composable(Screens.TRIP.route) {
-                                        Screens.TRIP.Launch(
-                                            viewModel = viewModel,
-                                            navController = navController
-                                        )
+                                        TripScreen(viewModel = viewModel, navController = navController)
                                         selectedNavigationItemIndex = 0
                                     }
 
                                     composable(Screens.SETTINGS.route) {
-                                        Screens.SETTINGS.Launch(
-                                            viewModel = viewModel,
-                                            navController = navController
-                                        )
+                                        SettingsScreen(viewModel = viewModel, navController = navController)
                                         selectedNavigationItemIndex = 1
                                     }
 
                                     composable(Screens.CLIENTS.route) {
-                                        Screens.CLIENTS.Launch(
-                                            viewModel = viewModel,
-                                            navController = navController
-                                        )
+                                        ClientsScreen(viewModel = viewModel, navController = navController)
                                     }
                                     composable(Screens.ADD_CLIENT.route) {
-                                        Screens.ADD_CLIENT.Launch(
-                                            viewModel = viewModel,
-                                            navController = navController
-                                        )
+                                        AddClientScreen(viewModel = viewModel, navController = navController)
                                     }
                                     composable(Screens.PRODUCTS.route) {
-                                        Screens.PRODUCTS.Launch(
-                                            viewModel = viewModel,
-                                            navController = navController
-                                        )
+                                        ProductsScreen(viewModel = viewModel, navController = navController)
                                     }
                                     composable(Screens.ADD_PRODUCT.route) {
-                                        Screens.ADD_PRODUCT.Launch(
-                                            viewModel = viewModel,
-                                            navController = navController
+                                        AddProductScreen(viewModel = viewModel, navController = navController)
+                                    }
+                                    composable("${Screens.ADD_ORDER.route}?selectedClientId={selectedClientId}") {
+                                        val params = mapOf<String, Long?>(
+                                            "selectedClientId" to it.arguments?.getString("selectedClientId")?.toLong(),
                                         )
+                                        AddOrderScreen(viewModel = viewModel, navController = navController, params = params)
                                     }
                                 }
                             }

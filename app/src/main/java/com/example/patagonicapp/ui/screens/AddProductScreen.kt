@@ -2,7 +2,6 @@ package com.example.patagonicapp.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Balance
 import androidx.compose.material.icons.filled.Fastfood
@@ -50,7 +49,7 @@ fun AddProductScreen(viewModel: DataViewModel, navController: NavController) {
                     onValueChange = { newProductPricePerKg = it },
                     icon = Icons.Default.Money,
                     placeholder = "Price per Kg",
-                    numericKeyBoard = true
+                    isNumeric = true
                 )
 
                 Spacer(modifier = Modifier.height(paddingDivision))
@@ -60,7 +59,7 @@ fun AddProductScreen(viewModel: DataViewModel, navController: NavController) {
                     onValueChange = { newProductKgPerUnit = it },
                     icon = Icons.Default.Balance,
                     placeholder = "Kg per unit",
-                    numericKeyBoard = true
+                    isNumeric = true
                 )
 
                 Spacer(modifier = Modifier.height(paddingJump))
