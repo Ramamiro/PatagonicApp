@@ -27,7 +27,7 @@ fun TripScreen(viewModel: DataViewModel, navController: NavController) {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                          navController.navigate("${Screens.ADD_ORDER.route}")
+                    navController.navigate("${Screens.ADD_ORDER.route}")
                 },
                 backgroundColor = MaterialTheme.colors.secondary
             )
@@ -36,15 +36,17 @@ fun TripScreen(viewModel: DataViewModel, navController: NavController) {
             }
         }
     ) {
-        viewModel.clientsState.clientsList.forEach() {
-            LazyColumn() {
-                items(viewModel.getClientOrdersById(it.clientId)) { item ->
-                    val currentProduct = viewModel.getProductById(item.productId)
-                    Row() {
-                        Text(text = item.orderId.toString())
-                        Text(text = it.clientName)
-                        Text(text = currentProduct?.productName.toString())
-                        Text(text = item.quantity.toString())
+        Column() {
+            viewModel.clientsState.clientsList.forEach() {
+                LazyColumn() {
+                    items(viewModel.getClientOrdersById(it.clientId)) { item ->
+                        val currentProduct = viewModel.getProductById(item.productId)
+                        Row() {
+                            Text(text = item.orderId.toString())
+                            Text(text = it.clientName)
+                            Text(text = currentProduct?.productName.toString())
+                            Text(text = item.quantity.toString())
+                        }
                     }
                 }
             }

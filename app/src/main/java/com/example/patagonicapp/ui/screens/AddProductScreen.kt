@@ -3,9 +3,7 @@ package com.example.patagonicapp.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Balance
-import androidx.compose.material.icons.filled.Fastfood
-import androidx.compose.material.icons.filled.Money
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
@@ -38,7 +36,7 @@ fun AddProductScreen(viewModel: DataViewModel, navController: NavController) {
                 CustomTextField(
                     value = newProductName,
                     onValueChange = { newProductName = it },
-                    icon = Icons.Default.Fastfood,
+                    icon = Icons.Default.Label,
                     placeholder = "Product name"
                 )
 
@@ -47,7 +45,7 @@ fun AddProductScreen(viewModel: DataViewModel, navController: NavController) {
                 CustomTextField(
                     value = newProductPricePerKg,
                     onValueChange = { newProductPricePerKg = it },
-                    icon = Icons.Default.Money,
+                    icon = Icons.Default.AttachMoney,
                     placeholder = "Price per Kg",
                     isNumeric = true
                 )

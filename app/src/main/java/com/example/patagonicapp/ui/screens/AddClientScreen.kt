@@ -10,6 +10,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,26 +19,34 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.patagonicapp.Screens
+import com.example.patagonicapp.TYPE
 import com.example.patagonicapp.models.Client
 import com.example.patagonicapp.models.Location
+import com.example.patagonicapp.ui.customComponents.CustomButton
 import com.example.patagonicapp.ui.customComponents.CustomSpinner
 import com.example.patagonicapp.ui.customComponents.CustomTextField
 import com.example.patagonicapp.ui.customComponents.CustomTopBar
 import com.example.patagonicapp.ui.theme.paddingDivision
 import com.example.patagonicapp.ui.theme.paddingJump
+import com.example.patagonicapp.viewmodels.PickerViewModel
 import com.example.roompractice.viewmodels.DataViewModel
 
 @Composable
-fun AddClientScreen(viewModel: DataViewModel, navController: NavController) {
+fun AddClientScreen(
+    viewModel: DataViewModel,
+    navController: NavController,
+    pickerViewModel: PickerViewModel
+) {
 
-    var newClientName by remember { mutableStateOf("") }
-    var newClientBusiness by remember { mutableStateOf("") }
+    var newClientName by rememberSaveable { mutableStateOf("") }
+    var newClientBusiness by rememberSaveable { mutableStateOf("") }
+    var newClientNumber by rememberSaveable { mutableStateOf("") }
+    val location = viewModel.getLocationById(pickerViewModel.selectedLocationId.value)
 
-    var newClientLocationId by remember { mutableStateOf<Long?>(null) }
-    var showLocations by remember { mutableStateOf(false) }
-
-    var customLocation by remember { mutableStateOf(false) }
-    var newLocationName by remember { mutableStateOf("") }
+    fun popBack() {
+        pickerViewModel.clear()
+        navController.popBackStack()
+    }
 
     Scaffold(
         topBar = {
@@ -69,26 +78,27 @@ fun AddClientScreen(viewModel: DataViewModel, navController: NavController) {
                     value = newClientBusiness,
                     onValueChange = { newClientBusiness = it },
                     placeholder = "Business name",
-                    icon = Icons.Default.Factory
+                    icon = Icons.Default.Storefront
                 )
 
                 Spacer(modifier = Modifier.height(paddingDivision))
 
                 CustomTextField(
-                    value = newClientName,
-                    onValueChange = { newClientName = it },
+                    value = newClientNumber,
+                    onValueChange = { newClientNumber = it },
                     placeholder = "Phone number",
-                    icon = Icons.Default.Phone
+                    icon = Icons.Default.Phone,
+                    isNumeric = true
                 )
 
                 Spacer(modifier = Modifier.height(paddingDivision))
 
-                CustomSpinner<Location>(
-                    options = viewModel.locationsState.locationsList,
-                    value = viewModel.getLocationById(newClientLocationId)?.locationName ?: "",
-                    onSelection = { newClientLocationId = it.locationId },
-                    onDisplay = { it.locationName },
-                    placeholder = "Location"
+                CustomButton(
+                    value = "Location ${location?.locationName ?: ""}",
+                    onClick = {
+                        navController.navigate("${Screens.PICKER}/${TYPE.LOCATION.name}")
+                    },
+                    icon = Icons.Default.Map
                 )
 
                 Spacer(modifier = Modifier.height(paddingJump))
@@ -100,16 +110,16 @@ fun AddClientScreen(viewModel: DataViewModel, navController: NavController) {
                     Button(
                         shape = MaterialTheme.shapes.large,
                         onClick = {
-                            if (newClientLocationId != null && newClientName != "" && newClientBusiness != "") {
+                            if (location != null && newClientName != "" && newClientBusiness != "") {
                                 try {
                                     viewModel.addClient(
                                         Client(
                                             clientName = newClientName,
                                             clientBusiness = newClientBusiness,
-                                            locationId = newClientLocationId!!
+                                            locationId = location.locationId
                                         )
                                     )
-                                    navController.popBackStack()
+                                    popBack()
                                 } catch (_: Exception) {
                                 }
                             }
@@ -122,59 +132,59 @@ fun AddClientScreen(viewModel: DataViewModel, navController: NavController) {
         }
     }
 }
-
-@Composable
-fun LocationSelectionButton(
-    viewModel: DataViewModel,
-    locationId: Long?,
-    onSelectLocation: (selectedProductId: Long?) -> Unit,
-) {
-
-    var isLocationsOptionsVisible by remember { mutableStateOf(false) }
-
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Box {
-            OutlinedTextField(
-                value = viewModel.getLocationById(locationId)?.locationName ?: "",
-                onValueChange = {},
-                label = { Text("Location") },
-                readOnly = true,
-//                    modifier = Modifier.fillMaxWidth(),
-                trailingIcon = { Icon(Icons.Default.ArrowDropDown, null) }
-            )
-            Spacer(modifier = Modifier
-                .matchParentSize()
-                .background(Color.Transparent)
-                .padding(top = 6.dp)
-                .clickable(
-                    onClick = { isLocationsOptionsVisible = true }
-                ))
-        }
-
-        DropdownMenu(
-            expanded = isLocationsOptionsVisible,
-            onDismissRequest = { isLocationsOptionsVisible = false },
-        ) {
-            viewModel.locationsState.locationsList.forEach() {
-                DropdownMenuItem(onClick = {
-                    onSelectLocation(it.locationId)
-                    isLocationsOptionsVisible = false
-                }) {
-                    Text(it.locationName)
-                }
-            }
-            DropdownMenuItem(
-                onClick = {
-                    //##TODO: ADD NEW LOCATION
-                },
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                }
-            }
-        }
-    }
-}
+//
+//@Composable
+//fun LocationSelectionButton(
+//    viewModel: DataViewModel,
+//    locationId: Long?,
+//    onSelectLocation: (selectedProductId: Long?) -> Unit,
+//) {
+//
+//    var isLocationsOptionsVisible by remember { mutableStateOf(false) }
+//
+//    Row(modifier = Modifier.fillMaxWidth()) {
+//        Box {
+//            OutlinedTextField(
+//                value = viewModel.getLocationById(locationId)?.locationName ?: "",
+//                onValueChange = {},
+//                label = { Text("Location") },
+//                readOnly = true,
+////                    modifier = Modifier.fillMaxWidth(),
+//                trailingIcon = { Icon(Icons.Default.ArrowDropDown, null) }
+//            )
+//            Spacer(modifier = Modifier
+//                .matchParentSize()
+//                .background(Color.Transparent)
+//                .padding(top = 6.dp)
+//                .clickable(
+//                    onClick = { isLocationsOptionsVisible = true }
+//                ))
+//        }
+//
+//        DropdownMenu(
+//            expanded = isLocationsOptionsVisible,
+//            onDismissRequest = { isLocationsOptionsVisible = false },
+//        ) {
+//            viewModel.locationsState.locationsList.forEach() {
+//                DropdownMenuItem(onClick = {
+//                    onSelectLocation(it.locationId)
+//                    isLocationsOptionsVisible = false
+//                }) {
+//                    Text(it.locationName)
+//                }
+//            }
+//            DropdownMenuItem(
+//                onClick = {
+//                    //##TODO: ADD NEW LOCATION
+//                },
+//            ) {
+//                Row(
+//                    horizontalArrangement = Arrangement.Center,
+//                    modifier = Modifier.fillMaxWidth()
+//                ) {
+//                    Icon(imageVector = Icons.Default.Add, contentDescription = null)
+//                }
+//            }
+//        }
+//    }
+//}

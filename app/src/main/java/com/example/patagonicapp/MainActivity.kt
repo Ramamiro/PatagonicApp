@@ -1,21 +1,18 @@
 package com.example.patagonicapp
 
+import android.os.Build.PRODUCT
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
-import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Analytics
-import androidx.compose.material.icons.outlined.MoveToInbox
-import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.LocalShipping
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -26,13 +23,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import com.example.patagonicapp.models.Client
+import com.example.patagonicapp.models.Location
+import com.example.patagonicapp.models.Order
+import com.example.patagonicapp.models.Product
 import com.example.patagonicapp.room.AppDatabase
 import com.example.patagonicapp.ui.screens.*
 import com.example.patagonicapp.ui.theme.RoomPracticeTheme
+import com.example.patagonicapp.viewmodels.PickerViewModel
 import com.example.roompractice.viewmodels.DataViewModel
+import kotlin.reflect.KClass
 
 data class NavigationItem(
     val title: String,
@@ -40,19 +42,22 @@ data class NavigationItem(
     val unSelectedIcon: ImageVector,
 )
 
-data class Screen(
-    val route: String,
-    val screen: (viewModel: ViewModel, navController: NavController) -> Unit
-)
-
+enum class TYPE(val classType: KClass<*>){
+    CLIENT(Client::class),
+    PRODUCT( Product::class),
+    ORDER(Order::class),
+    LOCATION(Location::class)
+}
 enum class Screens(val route: String) {
     TRIP(route = "Trip"),
     SETTINGS(route = "Settings"),
     CLIENTS(route = "Clients"),
-    ADD_CLIENT(route = "Add Client") ,
+    ADD_CLIENT(route = "Add Client"),
     PRODUCTS(route = "Products"),
     ADD_PRODUCT(route = "Add Products"),
     ADD_ORDER(route = "Add Order"),
+    ADD_LOCATION(route = "Add Location"),
+    PICKER(route = "Picker"),
 }
 
 
@@ -69,6 +74,8 @@ class MainActivity : ComponentActivity() {
             database.locationsDao()
         )
 
+        val pickerViewModel = PickerViewModel()
+
         setContent {
             RoomPracticeTheme {
                 val navController = rememberNavController()
@@ -81,8 +88,8 @@ class MainActivity : ComponentActivity() {
                 val navigationItemList = listOf(
                     NavigationItem(
                         title = Screens.TRIP.route,
-                        selectedIcon = Icons.Filled.ShoppingCart,
-                        unSelectedIcon = Icons.Outlined.ShoppingCart
+                        selectedIcon = Icons.Filled.LocalShipping,
+                        unSelectedIcon = Icons.Outlined.LocalShipping
                     ),
                     NavigationItem(
                         title = Screens.SETTINGS.route,
@@ -122,42 +129,80 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         },
-                        content = {
+                        content = { paddingValues ->
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(it)
+                                    .padding(paddingValues)
                             ) {
                                 NavHost(navController = navController, startDestination = "Trip") {
 
                                     composable(Screens.TRIP.route) {
-                                        TripScreen(viewModel = viewModel, navController = navController)
+                                        TripScreen(
+                                            viewModel = viewModel,
+                                            navController = navController
+                                        )
                                         selectedNavigationItemIndex = 0
                                     }
 
                                     composable(Screens.SETTINGS.route) {
-                                        SettingsScreen(viewModel = viewModel, navController = navController)
+                                        SettingsScreen(
+                                            viewModel = viewModel,
+                                            navController = navController
+                                        )
                                         selectedNavigationItemIndex = 1
                                     }
 
                                     composable(Screens.CLIENTS.route) {
-                                        ClientsScreen(viewModel = viewModel, navController = navController)
+                                        ClientsScreen(
+                                            viewModel = viewModel,
+                                            navController = navController
+                                        )
                                     }
                                     composable(Screens.ADD_CLIENT.route) {
-                                        AddClientScreen(viewModel = viewModel, navController = navController)
+                                        AddClientScreen(
+                                            viewModel = viewModel,
+                                            navController = navController,
+                                            pickerViewModel = pickerViewModel
+                                        )
                                     }
                                     composable(Screens.PRODUCTS.route) {
-                                        ProductsScreen(viewModel = viewModel, navController = navController)
+                                        ProductsScreen(
+                                            viewModel = viewModel,
+                                            navController = navController
+                                        )
                                     }
                                     composable(Screens.ADD_PRODUCT.route) {
-                                        AddProductScreen(viewModel = viewModel, navController = navController)
-                                    }
-                                    composable("${Screens.ADD_ORDER.route}?selectedClientId={selectedClientId}") {
-                                        val params = mapOf<String, Long?>(
-                                            "selectedClientId" to it.arguments?.getString("selectedClientId")?.toLong(),
+                                        AddProductScreen(
+                                            viewModel = viewModel,
+                                            navController = navController
                                         )
-                                        AddOrderScreen(viewModel = viewModel, navController = navController, params = params)
                                     }
+                                    composable(Screens.ADD_ORDER.route) {
+                                        AddOrderScreen(
+                                            viewModel = viewModel,
+                                            navController = navController,
+                                            pickerViewModel = pickerViewModel
+                                        )
+                                    }
+                                    composable(Screens.ADD_LOCATION.route) {
+                                        AddLocationScreen(
+                                            viewModel = viewModel,
+                                            navController = navController,
+                                            pickerViewModel = pickerViewModel
+                                        )
+                                    }
+                                    composable("${Screens.PICKER.route}/{type}" ) {
+                                        val type = it.arguments?.getString("type").toString()
+
+                                        PickerScreen(
+                                            viewModel = viewModel,
+                                            navController = navController,
+                                            pickerViewModel = pickerViewModel,
+                                            type=type
+                                        )
+                                    }
+
                                 }
                             }
                         }

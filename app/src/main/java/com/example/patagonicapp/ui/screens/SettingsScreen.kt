@@ -5,10 +5,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddBox
-import androidx.compose.material.icons.filled.GifBox
-import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,7 +48,7 @@ fun SettingsScreen(viewModel: DataViewModel, navController: NavController) {
 
                 CustomButton(
                     value = "Products",
-                    icon = Icons.Default.AddBox,
+                    icon = Icons.Default.Label,
                     onClick = {
                         navController.navigate(Screens.PRODUCTS.route)
                     })
@@ -61,7 +58,9 @@ fun SettingsScreen(viewModel: DataViewModel, navController: NavController) {
                 CustomButton(
                     value = "Locations",
                     icon = Icons.Default.Map,
-                    onClick = { /*TODO*/ })
+                    onClick = {
+                        navController.navigate(Screens.ADD_LOCATION.route)
+                    })
 
                 Spacer(modifier = Modifier.height(paddingDivision))
             }
