@@ -23,7 +23,7 @@ fun CustomTextField(
     placeholder: String = "",
     icon: ImageVector? = null,
     textStyle: TextStyle = MaterialTheme.typography.body1,
-    color: Color = MaterialTheme.colors.primary,
+    color: Color = Color.Black,
     isNumeric: Boolean = false
 ) {
     BasicTextField(value = value,

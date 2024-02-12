@@ -25,9 +25,15 @@ import com.example.patagonicapp.ui.theme.paddingDefault
 import com.example.patagonicapp.ui.theme.paddingDivision
 import com.example.patagonicapp.ui.theme.paddingJump
 import com.example.roompractice.viewmodels.DataViewModel
+import kotlinx.coroutines.flow.collect
 
 @Composable
 fun TripScreen(viewModel: DataViewModel, navController: NavController) {
+
+
+    viewModel.clientsState.clientsList.forEach(){
+        Log.d(it.clientName, it.clientStatus.name)
+    }
 
     val sortOptions = mapOf<String, Comparator<Client>>(
         "Name" to compareBy { it.clientName },
@@ -92,17 +98,15 @@ fun TripScreen(viewModel: DataViewModel, navController: NavController) {
                             .sortedWith(sortOptions[viewModel.currentSortOption]!!)
                     )
                     {
-                        val clientOrders =
-                            viewModel.ordersState.ordersList.filter { order -> order.clientId == it.clientId }
-                        if (clientOrders.isNotEmpty()) {
+                        val client = viewModel.getClientById(it.clientId)
+                        if (client!!.clientStatus != ClientStatus.INACTIVE) {
+                            val clientOrders = viewModel.getOrdersByClientId(it.clientId)
                             CustomOrderCard(
                                 viewModel = viewModel,
                                 client = it,
                                 orders = clientOrders
                             )
                             Spacer(modifier = Modifier.height(paddingJump))
-                        }else{
-                            viewModel.updateClient(it.copy(clientStatus = ClientStatus.INACTIVE))
                         }
                     }
                 }

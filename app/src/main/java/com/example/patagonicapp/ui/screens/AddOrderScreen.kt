@@ -44,92 +44,81 @@ fun AddOrderScreen(
 
     }
     val client = viewModel.getClientById(pickerViewModel.selectedClientId.value)
+
     val product = viewModel.getProductById(pickerViewModel.selectedProductId.value)
 
     var quantity by rememberSaveable {
         mutableStateOf("")
     }
 
-    Scaffold(
-        topBar = {
-            CustomTopBar("Add Order")
-        }
-    )
-    {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = paddingDefault)
+    key(client,product) {
+        Scaffold(
+            topBar = {
+                CustomTopBar("Add Order")
+            }
         )
         {
-            Column(
-                Modifier.fillMaxSize()
-            ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = paddingDefault)
+            )
+            {
+                Column(
+                    Modifier.fillMaxSize()
+                ) {
+                    CustomButton(
+                        value = client?.clientName ?: "Client",
+                        onClick = {
+                            navController.navigate("${Screens.PICKER}/${TYPE.CLIENT.name}")
+                        },
+                        icon = Icons.Default.Person
+                    )
 
-                CustomButton(
-                    value = client?.clientName ?: "Client",
-                    onClick = {
-                        navController.navigate("${Screens.PICKER}/${TYPE.CLIENT.name}")
-                    },
-                    icon = Icons.Default.Person
-                )
+                    Spacer(modifier = Modifier.height(paddingJump))
 
-                Spacer(modifier = Modifier.height(paddingJump))
+                    CustomButton(
+                        value = product?.productName ?: "Product",
+                        onClick = {
+                            navController.navigate("${Screens.PICKER}/${TYPE.PRODUCT.name}")
+                        },
+                        icon = Icons.Default.Label
+                    )
 
-                CustomButton(
-                    value = product?.productName ?: "Product",
-                    onClick = {
-                        navController.navigate("${Screens.PICKER}/${TYPE.PRODUCT.name}")
-                    },
-                    icon = Icons.Default.Label
-                )
+                    Spacer(modifier = Modifier.height(paddingJump))
 
-                Spacer(modifier = Modifier.height(paddingJump))
+                    CustomTextField(
+                        value = quantity,
+                        onValueChange = { quantity = it },
+                        placeholder = "Quantity",
+                        isNumeric = true,
+                        icon = Icons.Default.LocalOffer
+                    )
 
-                CustomTextField(
-                    value = quantity,
-                    onValueChange = { quantity = it },
-                    placeholder = "Quantity",
-                    isNumeric = true,
-                    icon = Icons.Default.LocalOffer
-                )
+                    Spacer(modifier = Modifier.height(paddingJump))
 
-                Spacer(modifier = Modifier.height(paddingJump))
+                    CustomButton(value = "Add order", onClick = {
 
-                CustomButton(value = "Add order", onClick = {
+                        if (client != null && product != null && quantity.toInt() != 0) {
+                            val existingOrder = viewModel.ordersState.ordersList
+                                .filter { it.clientId == client.clientId }
+                                .filter { it.productId == product.productId }
 
-                    if (client != null && product != null && quantity.toInt() != 0) {
-                        val existingOrder = viewModel.ordersState.ordersList
-                            .filter { it.clientId == client.clientId }
-                            .filter { it.productId == product.productId }
-
-                        if (existingOrder.size == 1) {
-                            viewModel.updateOrder(
-                                existingOrder[0].copy(
-                                    quantity = existingOrder[0].quantity + quantity.toInt(),
-                                    total = product.kgPerUnit * product.pricePerKg * (existingOrder[0].quantity + quantity.toInt())
-                                )
+                            viewModel.addOrder(
+                                Order(
+                                    clientId = client.clientId,
+                                    productId = product.productId,
+                                    quantity = quantity.toInt(),
+                                    total = product.kgPerUnit * product.pricePerKg * quantity.toInt()
+                                ),
+                                clientId = client.clientId
                             )
-                            viewModel.updateClient(client.copy(clientStatus = ClientStatus.PENDING))
                             popBack()
-                        } else {
-                            try {
-                                viewModel.addOrder(
-                                    Order(
-                                        clientId = client.clientId,
-                                        productId = product.productId,
-                                        quantity = quantity.toInt(),
-                                        total = product.kgPerUnit * product.pricePerKg * quantity.toInt()
-                                    )
-                                )
-                                popBack()
-                            } catch (err: Exception) {
-                                Log.d("Exception", err.toString())
-                            }
+
                         }
                     }
+                    )
                 }
-                )
             }
         }
     }

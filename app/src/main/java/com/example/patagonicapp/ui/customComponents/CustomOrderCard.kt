@@ -42,7 +42,6 @@ fun CustomOrderCard(viewModel: DataViewModel, client: Client, orders: List<Order
     val interactionSource = remember { MutableInteractionSource() }
 
     key(client) {
-        Log.d(client.clientName, client.clientStatus.name)
         Surface(
             elevation = 3.dp,
             shape = RoundedCornerShape(16.dp),

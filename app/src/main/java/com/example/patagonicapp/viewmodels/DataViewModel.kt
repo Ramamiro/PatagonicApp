@@ -104,7 +104,7 @@ class DataViewModel(
         paymentDao.addPayment(payment)
     }
 
-    fun addDebt(debt:Debt) = viewModelScope.launch {
+    fun addDebt(debt: Debt) = viewModelScope.launch {
         debtDao.addDebt(debt)
     }
 
@@ -116,12 +116,27 @@ class DataViewModel(
         productDao.addProduct(product)
     }
 
-    fun addOrder(order: Order) = viewModelScope.launch {
+    fun addOrder(order: Order, clientId: Long) = viewModelScope.launch {
+        val client = getClientById(clientId)
+        clientDao.updateClient(client!!.copy(clientStatus = ClientStatus.PENDING))
 
-        val client = getClientById(order.clientId)!!
-        clientDao.updateClient(client.copy(clientStatus = ClientStatus.PENDING))
-        orderDao.addOrder(order)
-        Log.d("Step 1","Order added")
+
+        val previousOrder =
+            getOrdersByClientId(clientId = clientId).find { it.productId == order.productId }
+
+        if (previousOrder == null) {
+            orderDao.addOrder(order)
+        } else {
+            val product = getProductById(order.productId)!!
+
+            updateOrder(
+                order = previousOrder.copy(
+                    quantity = previousOrder.quantity + order.quantity,
+                    total = (previousOrder.quantity + order.quantity) * product.pricePerKg * product.kgPerUnit
+                )
+            )
+        }
+
     }
 
     fun addLocation(locationName: String) = viewModelScope.launch {
@@ -129,9 +144,10 @@ class DataViewModel(
     }
 
     /// GETS
-//    fun getClientOrdersById(requestedClientId: Long): List<Order> {
-//        return ordersState.ordersList.filter { it.clientId == requestedClientId }
-//    }
+
+    fun getOrdersByClientId(clientId: Long): List<Order> {
+        return ordersState.ordersList.filter { it.clientId == clientId }
+    }
 
     fun getProductById(requestedProductId: Long?): Product? {
         return if (requestedProductId == null) {
@@ -165,7 +181,7 @@ class DataViewModel(
         clientDao.updateClient(client)
     }
 
-    fun updateOrder(order: Order) = viewModelScope.launch{
+    fun updateOrder(order: Order) = viewModelScope.launch {
         orderDao.updateOrder(order)
     }
 

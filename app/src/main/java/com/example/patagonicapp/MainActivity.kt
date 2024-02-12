@@ -93,7 +93,7 @@ class MainActivity : ComponentActivity() {
             database.debtsDao(),
         )
 
-        val pickerViewModel = PickerViewModel()
+        val pickerViewModel = PickerViewModel(viewModel)
 
         setContent {
             RoomPracticeTheme {
