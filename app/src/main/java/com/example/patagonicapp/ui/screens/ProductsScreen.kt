@@ -51,7 +51,6 @@ fun ProductsScreen(viewModel: DataViewModel, navController: NavController) {
 @Composable
 fun ProductItem(item: Product) {
     Row() {
-        Text(text = item.productId.toString())
-        Text(text = item.productName)
+        CustomButton(value = item.productName, onClick = { /*TODO*/ })
     }
 }

@@ -1,6 +1,7 @@
 package com.example.patagonicapp.models
 
 import androidx.room.*
+import com.example.patagonicapp.ClientStatus
 
 @Entity(tableName="clients",
 foreignKeys = [ForeignKey(entity= Location::class, childColumns = ["locationId"], parentColumns = ["locationId"])],
@@ -21,14 +22,5 @@ data class Client(
     val clientStatus: ClientStatus = ClientStatus.INACTIVE,
 
     val locationId: Long
-
     )
-
-enum class ClientStatus {
-    INACTIVE,
-    PENDING,
-    DELIVERED,
-    CONCLUDED,
-    CANCELLED
-}
 

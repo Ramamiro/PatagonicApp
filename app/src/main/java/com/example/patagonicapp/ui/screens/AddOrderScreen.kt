@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.example.patagonicapp.ClientStatus
 import com.example.patagonicapp.Screens
 import com.example.patagonicapp.TYPE
 import com.example.patagonicapp.models.Order
@@ -42,9 +43,9 @@ fun AddOrderScreen(
         popBack()
 
     }
-
     val client = viewModel.getClientById(pickerViewModel.selectedClientId.value)
     val product = viewModel.getProductById(pickerViewModel.selectedProductId.value)
+
     var quantity by rememberSaveable {
         mutableStateOf("")
     }
@@ -96,19 +97,37 @@ fun AddOrderScreen(
                 Spacer(modifier = Modifier.height(paddingJump))
 
                 CustomButton(value = "Add order", onClick = {
-                    if (client != null && product != null && quantity.toInt() != 0)
-                        try {
 
-                            viewModel.addOrder(
-                                Order(
-                                    clientId = client.clientId,
-                                    productId = product.productId,
-                                    quantity = quantity.toInt()
+                    if (client != null && product != null && quantity.toInt() != 0) {
+                        val existingOrder = viewModel.ordersState.ordersList
+                            .filter { it.clientId == client.clientId }
+                            .filter { it.productId == product.productId }
+
+                        if (existingOrder.size == 1) {
+                            viewModel.updateOrder(
+                                existingOrder[0].copy(
+                                    quantity = existingOrder[0].quantity + quantity.toInt(),
+                                    total = product.kgPerUnit * product.pricePerKg * (existingOrder[0].quantity + quantity.toInt())
                                 )
                             )
+                            viewModel.updateClient(client.copy(clientStatus = ClientStatus.PENDING))
                             popBack()
-                        } catch (_: Exception) {
+                        } else {
+                            try {
+                                viewModel.addOrder(
+                                    Order(
+                                        clientId = client.clientId,
+                                        productId = product.productId,
+                                        quantity = quantity.toInt(),
+                                        total = product.kgPerUnit * product.pricePerKg * quantity.toInt()
+                                    )
+                                )
+                                popBack()
+                            } catch (err: Exception) {
+                                Log.d("Exception", err.toString())
+                            }
                         }
+                    }
                 }
                 )
             }

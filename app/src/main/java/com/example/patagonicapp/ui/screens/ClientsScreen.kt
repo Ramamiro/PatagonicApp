@@ -52,12 +52,15 @@ fun ClientsScreen(viewModel: DataViewModel, navController: NavController) {
 }
 @Composable
 fun ClientItem(item: Client, viewModel: DataViewModel) {
-    Row() {
+    Row()
+    {
 
-        Text(text = item.clientId.toString())
-        Text(text = item.clientName)
-        Text(text = item.clientBusiness)
-        Text(text = viewModel.getLocationById(item.locationId)?.locationName ?: "")
+        CustomButton(value = item.clientName, onClick = { /*TODO*/ })
+
+//        Text(text = item.clientId.toString())
+//        Text(text = item.clientName)
+//        Text(text = item.clientBusiness)
+//        Text(text = viewModel.getLocationById(item.locationId)?.locationName ?: "")
 
     }
 }

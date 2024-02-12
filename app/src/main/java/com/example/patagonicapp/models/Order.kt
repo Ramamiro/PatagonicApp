@@ -16,6 +16,6 @@ data class Order (
     val orderId: Long = 0,
     val clientId: Long,
     val productId: Long,
-    val quantity: Int
-
+    val quantity: Int,
+    val total: Double
     )

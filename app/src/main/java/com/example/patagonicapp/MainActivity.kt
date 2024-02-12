@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Analytics
@@ -31,7 +32,7 @@ import com.example.patagonicapp.models.Order
 import com.example.patagonicapp.models.Product
 import com.example.patagonicapp.room.AppDatabase
 import com.example.patagonicapp.ui.screens.*
-import com.example.patagonicapp.ui.theme.RoomPracticeTheme
+import com.example.patagonicapp.ui.theme.*
 import com.example.patagonicapp.viewmodels.PickerViewModel
 import com.example.roompractice.viewmodels.DataViewModel
 import kotlin.reflect.KClass
@@ -42,12 +43,27 @@ data class NavigationItem(
     val unSelectedIcon: ImageVector,
 )
 
-enum class TYPE(val classType: KClass<*>){
+enum class ClientStatus(val color: Color) {
+    INACTIVE(Color.White),
+    PENDING(pendingColor),
+    DELIVERED(deliveredColor),
+    CONCLUDED(concludedColor),
+    CANCELED(canceledColor)
+}
+
+enum class PaymentType(val text: String){
+    CASH("Efectivo"),
+    TRANSFER("Transferencia"),
+    CHECK("Cheque")
+}
+
+enum class TYPE(val classType: KClass<*>) {
     CLIENT(Client::class),
-    PRODUCT( Product::class),
+    PRODUCT(Product::class),
     ORDER(Order::class),
     LOCATION(Location::class)
 }
+
 enum class Screens(val route: String) {
     TRIP(route = "Trip"),
     SETTINGS(route = "Settings"),
@@ -71,7 +87,10 @@ class MainActivity : ComponentActivity() {
             database.clientsDao(),
             database.productsDao(),
             database.ordersDao(),
-            database.locationsDao()
+            database.locationsDao(),
+            database.tripsDao(),
+            database.paymentsDao(),
+            database.debtsDao(),
         )
 
         val pickerViewModel = PickerViewModel()
@@ -93,7 +112,7 @@ class MainActivity : ComponentActivity() {
                     ),
                     NavigationItem(
                         title = Screens.SETTINGS.route,
-                        selectedIcon = Icons.Filled.Analytics,
+                        selectedIcon = Icons.Filled.QueryStats,
                         unSelectedIcon = Icons.Outlined.Analytics
                     )
                 )
@@ -115,14 +134,19 @@ class MainActivity : ComponentActivity() {
                                         },
                                         icon = {
                                             BadgedBox(badge = {}) {
-                                                Icon(
-                                                    imageVector = if (selectedNavigationItemIndex == index) {
-                                                        item.selectedIcon
-                                                    } else {
-                                                        item.unSelectedIcon
-                                                    },
-                                                    contentDescription = item.title
-                                                )
+                                                if (selectedNavigationItemIndex == index) {
+                                                    Icon(
+                                                        imageVector = item.selectedIcon,
+                                                        contentDescription = item.title,
+                                                        tint = colors.secondary
+                                                    )
+                                                } else {
+                                                    Icon(
+                                                        imageVector = item.selectedIcon,
+                                                        contentDescription = item.title,
+                                                        tint = colors.primary
+                                                    )
+                                                }
                                             }
                                         }
                                     )
@@ -138,6 +162,8 @@ class MainActivity : ComponentActivity() {
                                 NavHost(navController = navController, startDestination = "Trip") {
 
                                     composable(Screens.TRIP.route) {
+                                        pickerViewModel.clear()
+
                                         TripScreen(
                                             viewModel = viewModel,
                                             navController = navController
@@ -146,6 +172,8 @@ class MainActivity : ComponentActivity() {
                                     }
 
                                     composable(Screens.SETTINGS.route) {
+                                        pickerViewModel.clear()
+
                                         SettingsScreen(
                                             viewModel = viewModel,
                                             navController = navController
@@ -192,14 +220,14 @@ class MainActivity : ComponentActivity() {
                                             pickerViewModel = pickerViewModel
                                         )
                                     }
-                                    composable("${Screens.PICKER.route}/{type}" ) {
+                                    composable("${Screens.PICKER.route}/{type}") {
                                         val type = it.arguments?.getString("type").toString()
 
                                         PickerScreen(
                                             viewModel = viewModel,
                                             navController = navController,
                                             pickerViewModel = pickerViewModel,
-                                            type=type
+                                            type = type
                                         )
                                     }
 
