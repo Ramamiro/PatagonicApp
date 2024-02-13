@@ -75,7 +75,11 @@ fun TripScreen(viewModel: DataViewModel, navController: NavController) {
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {navController.navigate(Screens.ADD_ORDER.route)}
+                onClick = {
+                    viewModel.clientsState.clientsList.forEach(){
+                        Log.d(it.clientName, it.clientBusiness)
+                    }
+                    navController.navigate(Screens.ADD_ORDER.route)}
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = null)
             }
@@ -92,7 +96,6 @@ fun TripScreen(viewModel: DataViewModel, navController: NavController) {
                     .fillMaxWidth()
             ) {
                 LazyColumn() {
-                    Log.d("Step 3", "Recomposing orders")
                     items(
                         viewModel.clientsState.clientsList
                             .sortedWith(sortOptions[viewModel.currentSortOption]!!)

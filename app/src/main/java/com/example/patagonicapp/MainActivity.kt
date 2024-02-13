@@ -43,12 +43,12 @@ data class NavigationItem(
     val unSelectedIcon: ImageVector,
 )
 
-enum class ClientStatus(val color: Color) {
-    INACTIVE(Color.White),
-    PENDING(pendingColor),
-    DELIVERED(deliveredColor),
-    CONCLUDED(concludedColor),
-    CANCELED(canceledColor)
+enum class ClientStatus(val color: Color, val text: String) {
+    INACTIVE(Color.White, "Inactivo"),
+    PENDING(pendingColor, "Pendiente"),
+    DELIVERED(deliveredColor, "Entregado"),
+    CONCLUDED(concludedColor, "Concluido"),
+    CANCELED(canceledColor, "Cancelado")
 }
 
 enum class PaymentType(val text: String){

@@ -109,7 +109,8 @@ class DataViewModel(
     }
 
     fun addClient(client: Client) = viewModelScope.launch {
-        clientDao.addClient(client)
+        val formattedClient = client.copy(clientName = formatText(client.clientName), clientBusiness = formatText(client.clientName))
+        clientDao.addClient(formattedClient)
     }
 
     fun addProduct(product: Product) = viewModelScope.launch {
@@ -147,6 +148,10 @@ class DataViewModel(
 
     fun getOrdersByClientId(clientId: Long): List<Order> {
         return ordersState.ordersList.filter { it.clientId == clientId }
+    }
+
+    fun getPaymentsByClientId(clientId:Long):List<Payment>{
+        return paymentsState.list.filter { it.clientId == clientId }
     }
 
     fun getProductById(requestedProductId: Long?): Product? {

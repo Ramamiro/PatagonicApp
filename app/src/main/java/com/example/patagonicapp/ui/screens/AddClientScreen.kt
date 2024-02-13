@@ -94,7 +94,7 @@ fun AddClientScreen(
                 Spacer(modifier = Modifier.height(paddingDivision))
 
                 CustomButton(
-                    value = "Location ${location?.locationName ?: ""}",
+                    value = "${location?.locationName ?: "Location"}",
                     onClick = {
                         navController.navigate("${Screens.PICKER}/${TYPE.LOCATION.name}")
                     },
@@ -110,7 +110,7 @@ fun AddClientScreen(
                     Button(
                         shape = MaterialTheme.shapes.large,
                         onClick = {
-                            if (location != null && newClientName != "" && newClientBusiness != "") {
+                            if (location != null && (newClientName != "" || newClientBusiness != "")) {
                                 try {
                                     viewModel.addClient(
                                         Client(

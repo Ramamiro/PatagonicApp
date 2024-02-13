@@ -14,14 +14,16 @@ import com.example.patagonicapp.PaymentType
             childColumns = ["clientId"],
             parentColumns = ["clientId"]
         ),
-        ForeignKey(
-            entity = Trip::class,
-            childColumns = ["tripId"],
-            parentColumns = ["tripId"]
-        )],
+//        ForeignKey(
+//            entity = Trip::class,
+//            childColumns = ["tripId"],
+//            parentColumns = ["tripId"]
+//        )
+                  ],
     indices = [
-        Index("clientId"),
-        Index("tripId")]
+        Index("clientId")
+//        , Index("tripId")
+    ]
 )
 
 data class Payment(
@@ -29,7 +31,7 @@ data class Payment(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
 
-    val tripId: Long,
+//    val tripId: Long,
 
     val clientId: Long,
 

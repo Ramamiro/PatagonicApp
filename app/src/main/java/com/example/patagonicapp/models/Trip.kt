@@ -12,5 +12,6 @@ data class Trip(
 
     val active: Boolean,
 
-    val name: String
+    val name: String,
+
 )
