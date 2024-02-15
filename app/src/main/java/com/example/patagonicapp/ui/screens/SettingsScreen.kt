@@ -2,15 +2,11 @@ package com.example.patagonicapp.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.example.patagonicapp.Screens
 import com.example.patagonicapp.ui.customComponents.CustomButton
@@ -18,6 +14,7 @@ import com.example.patagonicapp.ui.customComponents.CustomTopBar
 import com.example.patagonicapp.ui.theme.paddingDefault
 import com.example.patagonicapp.ui.theme.paddingDivision
 import com.example.roompractice.viewmodels.DataViewModel
+import com.example.patagonicapp.R
 
 @Composable
 fun SettingsScreen(viewModel: DataViewModel, navController: NavController) {
@@ -36,9 +33,17 @@ fun SettingsScreen(viewModel: DataViewModel, navController: NavController) {
             Column(
                 Modifier.fillMaxSize()
             ) {
+                CustomButton(
+                    value = stringResource(id = R.string.trips),
+                    icon = Icons.Default.LocalShipping,
+                    onClick = {
+                        navController.navigate(Screens.ADD_TRIP.route)
+                    }
+                )
+                Spacer(modifier = Modifier.height(paddingDivision))
 
                 CustomButton(
-                    value = "Clients",
+                    value = stringResource(id = R.string.clients),
                     icon = Icons.Default.Person,
                     onClick = {
                         navController.navigate(Screens.CLIENTS.route)

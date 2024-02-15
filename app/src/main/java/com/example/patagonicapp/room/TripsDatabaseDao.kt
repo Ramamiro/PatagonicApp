@@ -3,6 +3,7 @@ package com.example.patagonicapp.room
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.example.patagonicapp.models.Trip
 import kotlinx.coroutines.flow.Flow
 
@@ -14,4 +15,6 @@ interface TripsDatabaseDao {
     @Insert
     suspend fun addTrip(trip: Trip)
 
+    @Update
+    suspend fun updateTrip(trip: Trip)
 }

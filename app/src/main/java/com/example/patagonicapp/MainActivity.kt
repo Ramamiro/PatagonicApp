@@ -1,6 +1,5 @@
 package com.example.patagonicapp
 
-import android.os.Build.PRODUCT
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Analytics
 import androidx.compose.material.icons.outlined.LocalShipping
-import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -24,8 +22,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.lifecycle.ViewModel
-import androidx.navigation.NavController
 import com.example.patagonicapp.models.Client
 import com.example.patagonicapp.models.Location
 import com.example.patagonicapp.models.Order
@@ -51,7 +47,7 @@ enum class ClientStatus(val color: Color, val text: String) {
     CANCELED(canceledColor, "Cancelado")
 }
 
-enum class PaymentType(val text: String){
+enum class PaymentType(val text: String) {
     CASH("Efectivo"),
     TRANSFER("Transferencia"),
     CHECK("Cheque")
@@ -65,7 +61,7 @@ enum class TYPE(val classType: KClass<*>) {
 }
 
 enum class Screens(val route: String) {
-    TRIP(route = "Trip"),
+    MAIN(route = "Main"),
     SETTINGS(route = "Settings"),
     CLIENTS(route = "Clients"),
     ADD_CLIENT(route = "Add Client"),
@@ -74,6 +70,8 @@ enum class Screens(val route: String) {
     ADD_ORDER(route = "Add Order"),
     ADD_LOCATION(route = "Add Location"),
     PICKER(route = "Picker"),
+    SHOW_CLIENT(route = "Show Client"),
+    ADD_TRIP(route="Add Trip")
 }
 
 
@@ -106,7 +104,7 @@ class MainActivity : ComponentActivity() {
 
                 val navigationItemList = listOf(
                     NavigationItem(
-                        title = Screens.TRIP.route,
+                        title = Screens.MAIN.route,
                         selectedIcon = Icons.Filled.LocalShipping,
                         unSelectedIcon = Icons.Outlined.LocalShipping
                     ),
@@ -116,6 +114,7 @@ class MainActivity : ComponentActivity() {
                         unSelectedIcon = Icons.Outlined.Analytics
                     )
                 )
+
 
                 Surface(modifier = Modifier.fillMaxSize()) {
                     Scaffold(
@@ -130,7 +129,13 @@ class MainActivity : ComponentActivity() {
                                     BottomNavigationItem(
                                         selected = selectedNavigationItemIndex == index,
                                         onClick = {
-                                            navController.navigate(item.title)
+                                            navController.navigate(item.title){
+                                                popUpTo(item.title) {
+                                                    inclusive = true
+                                                }
+                                                pickerViewModel.clear()
+                                                selectedNavigationItemIndex = index
+                                            }
                                         },
                                         icon = {
                                             BadgedBox(badge = {}) {
@@ -159,26 +164,20 @@ class MainActivity : ComponentActivity() {
                                     .fillMaxSize()
                                     .padding(paddingValues)
                             ) {
-                                NavHost(navController = navController, startDestination = "Trip") {
+                                NavHost(navController = navController, startDestination = Screens.MAIN.route) {
 
-                                    composable(Screens.TRIP.route) {
-                                        pickerViewModel.clear()
-
-                                        TripScreen(
+                                    composable(Screens.MAIN.route) {
+                                        MainScreen(
                                             viewModel = viewModel,
                                             navController = navController
                                         )
-                                        selectedNavigationItemIndex = 0
                                     }
 
                                     composable(Screens.SETTINGS.route) {
-                                        pickerViewModel.clear()
-
                                         SettingsScreen(
                                             viewModel = viewModel,
                                             navController = navController
                                         )
-                                        selectedNavigationItemIndex = 1
                                     }
 
                                     composable(Screens.CLIENTS.route) {
@@ -216,8 +215,7 @@ class MainActivity : ComponentActivity() {
                                     composable(Screens.ADD_LOCATION.route) {
                                         AddLocationScreen(
                                             viewModel = viewModel,
-                                            navController = navController,
-                                            pickerViewModel = pickerViewModel
+                                            navController = navController
                                         )
                                     }
                                     composable("${Screens.PICKER.route}/{type}") {
@@ -230,7 +228,18 @@ class MainActivity : ComponentActivity() {
                                             type = type
                                         )
                                     }
-
+                                    composable("${Screens.SHOW_CLIENT.route}/{clientId}") {
+                                        val clientId= it.arguments?.getString("clientId")!!.toLong()
+                                        ShowClientScreen(
+                                            viewModel = viewModel,
+                                            navController = navController,
+                                            pickerViewModel = pickerViewModel,
+                                            clientId = clientId
+                                        )
+                                    }
+                                    composable(Screens.ADD_TRIP.route){
+                                        AddTripScreen(viewModel = viewModel, navController = navController)
+                                    }
                                 }
                             }
                         }

@@ -14,8 +14,8 @@ interface OrdersDatabaseDao {
     @Insert
     suspend fun addOrder(order: Order)
 
-    @Delete
-    suspend fun deleteOrder(order:Order)
+    @Query("DELETE FROM orders WHERE orderId = :id")
+    suspend fun deleteOrderById(id:Long)
 
     @Update
     suspend fun updateOrder(order:Order)

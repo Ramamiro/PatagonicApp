@@ -27,7 +27,7 @@ fun PickerScreen(
     val classType = TYPE.valueOf(type).classType
 
     Scaffold(
-        topBar = { CustomTopBar(title = type) }
+        topBar = { CustomTopBar(title = classType.simpleName!!) }
     )
     {
         Box(

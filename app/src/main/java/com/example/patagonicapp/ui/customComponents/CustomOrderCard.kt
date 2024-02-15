@@ -29,13 +29,18 @@ import com.example.patagonicapp.ClientStatus
 import com.example.patagonicapp.models.Client
 import com.example.patagonicapp.models.Order
 import com.example.patagonicapp.ui.dialogs.AddPaymentDialog
+import com.example.patagonicapp.ui.screens.StatusMenu
 import com.example.patagonicapp.ui.theme.paddingDefault
+import com.example.patagonicapp.ui.theme.paddingDivision
+import com.example.patagonicapp.ui.theme.paddingJump
 import com.example.roompractice.viewmodels.DataViewModel
 
 @Composable
-fun CustomOrderCard(viewModel: DataViewModel, client: Client, orders: List<Order>) {
-    val total = orders.sumOf { it.total }
-
+fun CustomOrderCard(
+    viewModel: DataViewModel,
+    client: Client,
+    onLongPress: () -> Unit
+) {
     var isStatusMenuVisible by remember { mutableStateOf(false) }
     var areOrdersVisible by remember { mutableStateOf(false) }
 
@@ -43,6 +48,9 @@ fun CustomOrderCard(viewModel: DataViewModel, client: Client, orders: List<Order
     val interactionSource = remember { MutableInteractionSource() }
 
     var isDialogVisible by remember { mutableStateOf(false) }
+
+    val orders = viewModel.getOrdersByClientId(client.clientId, viewModel.getActiveTrip()?.id)
+    val payments = viewModel.getPaymentsByClientId(client.clientId, viewModel.getActiveTrip()?.id)
 
     key(client) {
         Surface(
@@ -68,12 +76,7 @@ fun CustomOrderCard(viewModel: DataViewModel, client: Client, orders: List<Order
                                 interactionSource.emit(PressInteraction.Release(press))
                                 tapped = false
                             },
-                            onLongPress = {
-                                orders.forEach() {
-                                    val product = viewModel.getProductById(it.productId)
-                                }
-                                isDialogVisible = true
-                            },
+                            onLongPress = { onLongPress() },
                             onTap = {
                                 areOrdersVisible = !areOrdersVisible
                             }
@@ -96,7 +99,7 @@ fun CustomOrderCard(viewModel: DataViewModel, client: Client, orders: List<Order
                             imageVector = Icons.Default.ContentPaste,
                             contentDescription = null,
                             modifier = Modifier.clickable {
-                                isStatusMenuVisible = true
+                                onLongPress()
                             }
                         )
                         Spacer(modifier = Modifier.width(paddingDefault))
@@ -180,55 +183,29 @@ fun CustomOrderCard(viewModel: DataViewModel, client: Client, orders: List<Order
                             Column(Modifier.padding(start = paddingDefault)) {
 
                                 orders.forEach() {
-                                    val product = viewModel.getProductById(it.productId)
-                                    Text(text = "${product?.productName ?: ""} x ${it.quantity} : $${it.total}")
-                                }
-
-                                key(total) {
-                                    Row(Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.End) {
-                                        Text(
-                                            text = "Total $ ${total}",
-                                            fontStyle= FontStyle.Italic
-                                        )
-                                    }
+                                    val product = viewModel.getProductById(it.productId)!!
+                                    Text(text = "${product.productName}  x  ${it.quantity}")
                                 }
                             }
 
                             CustomDivider()
 
-                            Column(
-                                modifier = Modifier.padding(start= paddingDefault)
-                            ) {
-                                val payments =viewModel.getPaymentsByClientId(client.clientId)
-                                payments.forEach() {
-                                    Text(text = "${it.type.text}: $ ${it.amount}")
-                                }
-                                Row(Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.End,
-                                    verticalAlignment = Alignment.CenterVertically
+                            key(orders, payments) {
+                                Column(
+                                    modifier = Modifier.padding(start = paddingDefault)
                                 ) {
+
                                     Text(
-                                        text = "Pagado $ ${payments.sumOf { it.amount }}",
-                                        fontStyle= FontStyle.Italic
+                                        text = "Total   " + viewModel.formatMoney(orders.sumOf { it.total }),
+                                        fontStyle = FontStyle.Italic
                                     )
+
+                                    Text(
+                                        text = "Pagado   " + viewModel.formatMoney(payments.sumOf { it.amount }),
+                                        fontStyle = FontStyle.Italic
+                                    )
+
                                 }
-//                                Box(
-//                                    Modifier
-//                                        .fillMaxWidth()
-//                                ) {
-//                                    Button(
-//                                        onClick = {
-//                                            isDialogVisible = true
-//                                        },
-//                                        colors = ButtonDefaults.buttonColors(
-//                                            backgroundColor = ClientStatus.PENDING.color
-//                                        ),
-//                                        modifier = Modifier.align(Alignment.CenterEnd)
-//                                    ) {
-//                                        Text("Pago", color = Color.White)
-//                                    }
-//                                }
                             }
                         }
                     }
@@ -245,31 +222,6 @@ fun CustomOrderCard(viewModel: DataViewModel, client: Client, orders: List<Order
     }
 }
 
-
-
-@Composable
-fun StatusMenu(
-    client: Client,
-    viewModel: DataViewModel,
-    isStatusMenuVisible: Boolean,
-    dismiss: () -> Unit
-) {
-    DropdownMenu(
-        expanded = isStatusMenuVisible,
-        onDismissRequest = { dismiss() }
-    ) {
-        for (statusValue in ClientStatus.values()) {
-            if (statusValue != ClientStatus.INACTIVE) {
-                DropdownMenuItem(onClick = {
-                    viewModel.updateClient(client.copy(clientStatus = statusValue))
-                    dismiss()
-                }) {
-                    Text(text = statusValue.text)
-                }
-            }
-        }
-    }
-}
 
 fun DrawScope.backgroundBox(
     status: ClientStatus

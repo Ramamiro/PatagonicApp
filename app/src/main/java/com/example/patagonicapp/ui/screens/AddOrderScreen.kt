@@ -39,10 +39,9 @@ fun AddOrderScreen(
     }
 
     BackHandler() {
-        Log.d("Proper back", "true")
         popBack()
-
     }
+
     val client = viewModel.getClientById(pickerViewModel.selectedClientId.value)
 
     val product = viewModel.getProductById(pickerViewModel.selectedProductId.value)
@@ -51,7 +50,7 @@ fun AddOrderScreen(
         mutableStateOf("")
     }
 
-    key(client,product) {
+    key(client, product) {
         Scaffold(
             topBar = {
                 CustomTopBar("Add Order")
@@ -98,23 +97,25 @@ fun AddOrderScreen(
                     Spacer(modifier = Modifier.height(paddingJump))
 
                     CustomButton(value = "Add order", onClick = {
-
-                        if (client != null && product != null && quantity.toInt() != 0) {
-                            val existingOrder = viewModel.ordersState.ordersList
-                                .filter { it.clientId == client.clientId }
-                                .filter { it.productId == product.productId }
-
-                            viewModel.addOrder(
-                                Order(
-                                    clientId = client.clientId,
-                                    productId = product.productId,
-                                    quantity = quantity.toInt(),
-                                    total = product.kgPerUnit * product.pricePerKg * quantity.toInt()
-                                ),
-                                clientId = client.clientId
-                            )
-                            popBack()
-
+                        val activeTrip = viewModel.getActiveTrip()
+                        if (activeTrip != null) {
+                            if (client != null && product != null && quantity.toInt() != 0) {
+                                try {
+                                    viewModel.addOrder(
+                                        Order(
+                                            clientId = client.clientId,
+                                            productId = product.productId,
+                                            quantity = quantity.toInt(),
+                                            total = product.kgPerUnit * product.pricePerKg * quantity.toInt(),
+                                            weight = product.kgPerUnit * quantity.toInt(),
+                                            tripId = activeTrip.id
+                                        ),
+                                        clientId = client.clientId
+                                    )
+                                    popBack()
+                                } catch (_: Exception) {
+                                }
+                            }
                         }
                     }
                     )

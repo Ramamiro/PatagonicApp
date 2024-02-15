@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">PatagonicApp</string>
+
+    <string name="client">Cliente</string>
+    <string name="clients">Clientes</string>
+
+    <string name="product">Producto</string>
+    <string name="products">Productos</string>
+
+    <string name="location">Localidad</string>
+    <string name="locations">Localidades</string>
+
+    <string name="trip">Viaje</string>
+    <string name="trips">Viajes</string>
+
 </resources>

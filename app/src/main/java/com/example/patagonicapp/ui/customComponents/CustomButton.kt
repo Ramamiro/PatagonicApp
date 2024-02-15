@@ -15,8 +15,10 @@ import com.example.patagonicapp.ui.theme.paddingJump
 fun CustomButton(
     value: String,
     onClick: () -> Unit,
-    icon: ImageVector? = null
-) {
+    icon: ImageVector? = null,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
+    color: Color = Color.Black,
+    ) {
     Box(
         Modifier.clickable(onClick = onClick)
     ) {
@@ -24,14 +26,16 @@ fun CustomButton(
             Modifier
                 .background(Color.White)
                 .padding(vertical = 8.dp, horizontal = 32.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            horizontalArrangement = horizontalArrangement
         ) {
             if (icon != null) {
-                Icon(icon, contentDescription = null)
+                Icon(icon, contentDescription = null, tint = color)
+                Spacer(Modifier.width(paddingJump))
             }
-            Spacer(Modifier.width(paddingJump))
             Text(
                 text = value,
+                color = color,
             )
         }
     }

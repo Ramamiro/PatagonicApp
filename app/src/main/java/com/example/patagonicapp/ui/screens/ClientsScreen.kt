@@ -37,7 +37,9 @@ fun ClientsScreen(viewModel: DataViewModel, navController: NavController) {
 
                 LazyColumn() {
                     items(viewModel.clientsState.clientsList) {
-                        ClientItem(item = it, viewModel)
+                        CustomButton(
+                            value = it.clientName,
+                            onClick = { navController.navigate("${Screens.SHOW_CLIENT.route}/${it.clientId}") })
                     }
                 }
 
@@ -50,12 +52,11 @@ fun ClientsScreen(viewModel: DataViewModel, navController: NavController) {
         }
     }
 }
+
 @Composable
 fun ClientItem(item: Client, viewModel: DataViewModel) {
     Row()
     {
-
-        CustomButton(value = item.clientName, onClick = { /*TODO*/ })
 
 //        Text(text = item.clientId.toString())
 //        Text(text = item.clientName)

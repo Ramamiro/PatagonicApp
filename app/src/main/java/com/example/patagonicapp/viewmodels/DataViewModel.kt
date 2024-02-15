@@ -12,6 +12,8 @@ import com.example.patagonicapp.room.*
 import com.example.patagonicapp.states.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
+import java.util.*
 
 class DataViewModel(
     private val clientDao: ClientsDatabaseDao,
@@ -39,6 +41,8 @@ class DataViewModel(
         private set
 
     var currentSortOption by mutableStateOf("Name")
+
+    val currencyFormat = NumberFormat.getCurrencyInstance(Locale.US)
 
     init {
         viewModelScope.launch {
@@ -96,8 +100,9 @@ class DataViewModel(
 
     // ADDS
 
-    fun addTrip(trip: Trip) = viewModelScope.launch {
-        tripDao.addTrip(trip)
+    fun addTrip(tripName: String) = viewModelScope.launch {
+        endActiveTrip()
+        tripDao.addTrip(Trip(name = tripName))
     }
 
     fun addPayment(payment: Payment) = viewModelScope.launch {
@@ -109,7 +114,10 @@ class DataViewModel(
     }
 
     fun addClient(client: Client) = viewModelScope.launch {
-        val formattedClient = client.copy(clientName = formatText(client.clientName), clientBusiness = formatText(client.clientName))
+        val formattedClient = client.copy(
+            clientName = formatText(client.clientName),
+            clientBusiness = formatText(client.clientName)
+        )
         clientDao.addClient(formattedClient)
     }
 
@@ -120,24 +128,23 @@ class DataViewModel(
     fun addOrder(order: Order, clientId: Long) = viewModelScope.launch {
         val client = getClientById(clientId)
         clientDao.updateClient(client!!.copy(clientStatus = ClientStatus.PENDING))
-
-
         val previousOrder =
-            getOrdersByClientId(clientId = clientId).find { it.productId == order.productId }
-
+            getOrdersByClientId(
+                clientId = clientId,
+                tripId = getActiveTrip()?.id
+            ).find { it.productId == order.productId }
         if (previousOrder == null) {
             orderDao.addOrder(order)
         } else {
             val product = getProductById(order.productId)!!
-
             updateOrder(
                 order = previousOrder.copy(
                     quantity = previousOrder.quantity + order.quantity,
-                    total = (previousOrder.quantity + order.quantity) * product.pricePerKg * product.kgPerUnit
+                    total = (previousOrder.quantity + order.quantity) * product.pricePerKg * product.kgPerUnit,
+                    weight = (previousOrder.quantity + order.quantity) * product.kgPerUnit
                 )
             )
         }
-
     }
 
     fun addLocation(locationName: String) = viewModelScope.launch {
@@ -146,12 +153,22 @@ class DataViewModel(
 
     /// GETS
 
-    fun getOrdersByClientId(clientId: Long): List<Order> {
-        return ordersState.ordersList.filter { it.clientId == clientId }
+    fun getOrdersByClientId(clientId: Long, tripId: Long? = null): List<Order> {
+        val clientOrders = ordersState.ordersList.filter { it.clientId == clientId }
+        return if (tripId == null) {
+            clientOrders
+        } else {
+            clientOrders.filter { it.tripId == tripId }
+        }
     }
 
-    fun getPaymentsByClientId(clientId:Long):List<Payment>{
-        return paymentsState.list.filter { it.clientId == clientId }
+    fun getPaymentsByClientId(clientId: Long, tripId: Long?): List<Payment> {
+        val clientPayments = paymentsState.list.filter { it.clientId == clientId }
+        return if (tripId == null) {
+            clientPayments
+        } else {
+            clientPayments.filter { it.tripId == tripId }
+        }
     }
 
     fun getProductById(requestedProductId: Long?): Product? {
@@ -178,8 +195,29 @@ class DataViewModel(
         }
     }
 
+    fun getActiveClients(): List<Client> {
+        return clientsState.clientsList.filter { it.clientStatus != ClientStatus.INACTIVE }
+    }
+
+    fun getActiveTrip(): Trip? {
+        return tripsState.list.find { it.active }
+    }
+
     fun deleteLocationById(locationId: Long) = viewModelScope.launch {
         locationsDao.deleteLocation(locationId = locationId)
+    }
+
+    fun deletePaymentById(id: Long) = viewModelScope.launch {
+        paymentDao.deletePaymentById(id = id)
+    }
+
+    fun deleteOrderById(orderId: Long, clientId: Long) = viewModelScope.launch {
+        val orders = getOrdersByClientId(clientId)
+        if (orders.size == 1) {
+            val client = getClientById(clientId)!!
+            updateClient(client.copy(clientStatus = ClientStatus.INACTIVE))
+        }
+        orderDao.deleteOrderById(id = orderId)
     }
 
     fun updateClient(client: Client) = viewModelScope.launch {
@@ -190,9 +228,25 @@ class DataViewModel(
         orderDao.updateOrder(order)
     }
 
+    fun endActiveTrip() = viewModelScope.launch {
+        val activeTrip = getActiveTrip()
+
+        if (activeTrip != null) {
+            tripDao.updateTrip(activeTrip.copy(active = false))
+            getActiveClients().forEach() {
+                updateClient(it.copy(clientStatus = ClientStatus.INACTIVE))
+            }
+
+        }
+
+    }
+
     private fun formatText(text: String): String {
         val words = text.trim().split("\\s+".toRegex())
         return words.joinToString(" ") { it.replaceFirstChar { char -> char.uppercaseChar() } }
     }
 
+    fun formatMoney(amount: Double):String{
+        return currencyFormat.format(amount)
+    }
 }

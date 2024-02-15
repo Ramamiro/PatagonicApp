@@ -16,7 +16,7 @@ import androidx.room.PrimaryKey
         ForeignKey(
             entity = Trip::class,
             childColumns = ["tripId"],
-            parentColumns = ["tripId"]
+            parentColumns = ["id"]
         )],
     indices = [
         Index("clientId"),

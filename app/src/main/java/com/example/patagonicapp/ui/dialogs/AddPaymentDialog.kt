@@ -66,13 +66,17 @@ fun AddPaymentDialog(viewModel: DataViewModel, client: Client, dismiss: () -> Un
             Spacer(modifier = Modifier.height(paddingDivision))
 
             CustomButton(value = "Add", onClick = {
-                viewModel.addPayment(
-                    Payment(
-                        clientId = client.clientId,
-                        type = PaymentType.values().find { it.text == selectedPaymentType }!!,
-                        amount = amount.toDouble()
+                val activeTrip = viewModel.getActiveTrip()
+                if (activeTrip != null) {
+                    viewModel.addPayment(
+                        Payment(
+                            clientId = client.clientId,
+                            type = PaymentType.values().find { it.text == selectedPaymentType }!!,
+                            amount = amount.toDouble(),
+                            tripId = activeTrip.id
+                        )
                     )
-                )
+                }
                 dismiss()
             })
 

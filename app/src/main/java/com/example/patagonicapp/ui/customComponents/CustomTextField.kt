@@ -46,9 +46,8 @@ fun CustomTextField(
             ) {
                 if (icon != null) {
                     Icon(icon, contentDescription = null, tint = color)
+                    Spacer(Modifier.width(paddingJump))
                 }
-
-                Spacer(Modifier.width(paddingJump))
 
                 Box(modifier = Modifier.fillMaxWidth()) {
                     if (value.isEmpty()) {

@@ -8,10 +8,9 @@ import androidx.room.PrimaryKey
 data class Trip(
 
     @PrimaryKey(autoGenerate = true)
-    val tripId: Long = 0,
+    val id: Long = 0,
 
-    val active: Boolean,
+    val active: Boolean = true,
 
     val name: String,
-
 )
