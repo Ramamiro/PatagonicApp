@@ -21,6 +21,7 @@ import androidx.navigation.NavController
 import com.example.patagonicapp.ClientStatus
 import com.example.patagonicapp.Screens
 import com.example.patagonicapp.models.Client
+import com.example.patagonicapp.models.Debt
 import com.example.patagonicapp.models.Order
 import com.example.patagonicapp.models.Payment
 import com.example.patagonicapp.ui.customComponents.*
@@ -44,7 +45,9 @@ fun ShowClientScreen(
 
     val orders = viewModel.getOrdersByClientId(clientId = clientId, tripId = activeTrip?.id)
 
-    val payments = viewModel.getPaymentsByClientId(clientId= clientId, tripId = activeTrip?.id)
+    val payments = viewModel.getPaymentsByClientId(clientId = clientId, tripId = activeTrip?.id)
+
+    val debt = viewModel.getDebtByClientId(clientId = clientId)
 
     var isStatusMenuVisible by remember { mutableStateOf(false) }
 
@@ -110,6 +113,29 @@ fun ShowClientScreen(
                         }
                     }
                 }
+                Spacer(modifier = Modifier.height(paddingJump))
+
+                CustomLabel(label = "DEBT")
+
+                Spacer(modifier = Modifier.height(paddingDivision))
+
+                key(debt) {
+                    if (debt != null) {
+                        CustomButton(value = viewModel.getTripById(debt.tripId)!!.name, onClick = { /*TODO*/ })
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(paddingDivision))
+
+                CustomButton(
+                    value = "",
+                    onClick = {
+                              
+                    },
+                    icon = Icons.Default.Add,
+                    horizontalArrangement = Arrangement.Center
+                )
+
                 Spacer(modifier = Modifier.height(paddingJump))
 
                 CustomLabel(label = "ORDERS")
@@ -204,6 +230,7 @@ fun ShowClientScreen(
                     horizontalArrangement = Arrangement.Center
                 )
             }
+
             if (isPaymentDialogVisible) {
                 Dialog(onDismissRequest = { isPaymentDialogVisible = false }) {
                     AddPaymentDialog(viewModel = viewModel, client = client) {

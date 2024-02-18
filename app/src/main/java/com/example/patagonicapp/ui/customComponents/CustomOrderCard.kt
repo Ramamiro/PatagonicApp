@@ -1,5 +1,6 @@
 package com.example.patagonicapp.ui.customComponents
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -161,8 +162,7 @@ fun CustomOrderCard(
                         }
                     }
                 }
-                if (areOrdersVisible) {
-
+                AnimatedVisibility (areOrdersVisible) {
                     Row(
                         Modifier
                             .fillMaxWidth()

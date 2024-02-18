@@ -100,7 +100,6 @@ class MainActivity : ComponentActivity() {
                 var selectedNavigationItemIndex by rememberSaveable {
                     mutableStateOf(0)
                 }
-                var showDialog by remember { mutableStateOf(false) }
 
                 val navigationItemList = listOf(
                     NavigationItem(
@@ -134,7 +133,6 @@ class MainActivity : ComponentActivity() {
                                                     inclusive = true
                                                 }
                                                 pickerViewModel.clear()
-                                                selectedNavigationItemIndex = index
                                             }
                                         },
                                         icon = {
@@ -167,6 +165,7 @@ class MainActivity : ComponentActivity() {
                                 NavHost(navController = navController, startDestination = Screens.MAIN.route) {
 
                                     composable(Screens.MAIN.route) {
+                                        selectedNavigationItemIndex = 0
                                         MainScreen(
                                             viewModel = viewModel,
                                             navController = navController
@@ -174,6 +173,7 @@ class MainActivity : ComponentActivity() {
                                     }
 
                                     composable(Screens.SETTINGS.route) {
+                                        selectedNavigationItemIndex = 1
                                         SettingsScreen(
                                             viewModel = viewModel,
                                             navController = navController

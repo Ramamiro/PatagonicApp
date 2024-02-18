@@ -171,6 +171,10 @@ class DataViewModel(
         }
     }
 
+    fun getTripById(id: Long):Trip?{
+        return tripsState.list.find{it.id == id}
+    }
+
     fun getProductById(requestedProductId: Long?): Product? {
         return if (requestedProductId == null) {
             null
@@ -203,6 +207,10 @@ class DataViewModel(
         return tripsState.list.find { it.active }
     }
 
+    fun getDebtByClientId(clientId:Long):Debt?{
+        return debtsState.list.find { it.clientId == clientId }
+    }
+
     fun deleteLocationById(locationId: Long) = viewModelScope.launch {
         locationsDao.deleteLocation(locationId = locationId)
     }
@@ -212,7 +220,7 @@ class DataViewModel(
     }
 
     fun deleteOrderById(orderId: Long, clientId: Long) = viewModelScope.launch {
-        val orders = getOrdersByClientId(clientId)
+        val orders = getOrdersByClientId(clientId, getActiveTrip()?.id)
         if (orders.size == 1) {
             val client = getClientById(clientId)!!
             updateClient(client.copy(clientStatus = ClientStatus.INACTIVE))

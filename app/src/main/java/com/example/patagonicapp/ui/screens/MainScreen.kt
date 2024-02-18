@@ -7,10 +7,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.LocalShipping
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Payments
+import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
@@ -63,15 +64,26 @@ fun MainScreen(viewModel: DataViewModel, navController: NavController) {
                 })
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                viewModel.clientsState.clientsList.forEach() {
-                    Log.d(it.clientName, it.clientBusiness)
-                }
-                navController.navigate(Screens.ADD_ORDER.route)
-            }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = null)
-            }
-        }) {
+
+            CustomFAB(
+                icon = Icons.Default.Add,
+                items = listOf(
+                    FabItem(Icons.Outlined.Payments, "EXPENSE", {}),
+                    FabItem(Icons.Outlined.Receipt, "ORDER", {navController.navigate(Screens.ADD_ORDER.route)})
+                )
+            )
+//
+//            FloatingActionButton(onClick = {
+//                viewModel.clientsState.clientsList.forEach() {
+//                    Log.d(it.clientName, it.clientBusiness)
+//                }
+//                navController.navigate(Screens.ADD_ORDER.route)
+//            }) {
+//                Icon(imageVector = Icons.Default.Add, contentDescription = null)
+//            }
+
+        }
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
